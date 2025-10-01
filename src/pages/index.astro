@@ -15,6 +15,7 @@ const experiences = (await getCollection('cv'))
 	.slice(0, 3);
 
 const posts = (await getCollection('blog'))
+	.filter((entry) => !entry.data.draft)
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
 
@@ -171,25 +172,27 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 				</ul>
 			</section>
 
-			<section>
-				<div class="section-header">
-					<h2>Latest writing</h2>
-					<a href="/blog">Browse the blog →</a>
-				</div>
-				<ul class="post-list">
-					{posts.map((post) => (
-						<li class="card">
-							<a class="card-link" href={`/blog/${post.id}/`}>
-								<p class="meta">
-									<FormattedDate date={post.data.pubDate} />
-								</p>
-								<h3>{post.data.title}</h3>
-								<p class="summary">{post.data.description}</p>
-							</a>
-						</li>
-					))}
-				</ul>
-			</section>
+			{posts.length > 0 && (
+				<section>
+					<div class="section-header">
+						<h2>Latest writing</h2>
+						<a href="/blog">Browse the blog →</a>
+					</div>
+					<ul class="post-list">
+						{posts.map((post) => (
+							<li class="card">
+								<a class="card-link" href={`/blog/${post.id}/`}>
+									<p class="meta">
+										<FormattedDate date={post.data.pubDate} />
+									</p>
+									<h3>{post.data.title}</h3>
+									<p class="summary">{post.data.description}</p>
+								</a>
+							</li>
+						))}
+					</ul>
+				</section>
+			)}
 		</main>
 		<Footer />
 	</body>

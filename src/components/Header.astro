@@ -1,6 +1,11 @@
 ---
+import { getCollection } from 'astro:content';
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+
+const hasPublishedPosts = (
+	await getCollection('blog', ({ data }) => !data.draft)
+).length > 0;
 ---
 
 <header>
@@ -9,7 +14,7 @@ import HeaderLink from './HeaderLink.astro';
 		<div class="internal-links">
 			<HeaderLink href="/">Home</HeaderLink>
 			<HeaderLink href="/cv">Experience</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
+			{hasPublishedPosts && <HeaderLink href="/blog">Blog</HeaderLink>}
 		</div>
 		<ul class="social-links">
 			<li>
