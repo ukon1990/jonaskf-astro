@@ -3,26 +3,27 @@ title: "Personal homepage with Astro"
 role: "Fullstack developer"
 employer: "Personal project"
 capacity: "hobby"
-summary: "Prototype tools and share learnings about resilient backend systems, developer experience, and team craftsmanship."
+summary: "Run a focused Astro homepage that showcases client work, ongoing side projects, and the experiments that tie them together."
 startDate: "2025-10-01"
 location: "Remote"
 tech:
   - astro
-  - react
+  - typescript
+  - nodejs
   - github-actions
 link: "https://github.com/ukon1990"
 ---
 
 ### Mission
 
-Use side projects to test new tooling, explore ideas quickly, and support local developer communities.
+Give visitors a clear snapshot of my professional engagements and side projects while keeping all updates in one approachable place.
 
 ### Highlights
 
-- Maintain this Astro-powered site as a living CV and knowledge base, sharing architecture notes and experiments.
-- Built small utilities in Rust and Node.js to automate release notes and dependency updates for client teams.
-- Organised peer-learning sessions on topics like event-driven design, Hexagonal architecture, and continuous delivery.
+- Curate professional case studies, community posts, and hobby builds in one place so the story stays coherent.
+- Lean on Astro components and TypeScript-powered filters to keep project metadata tidy and easy to browse.
+- Highlight fresh experiments and invite collaborators with quick links out to GitHub repos and short write-ups.
 
 ### Impact
 
-Keeps curiosity high and provides a low-risk space to evaluate emerging practices before recommending them to clients.
+Helps clients and collaborators quickly understand where I focus, and makes it effortless to point them to current work-in-progress.
