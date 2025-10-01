@@ -32,11 +32,20 @@ const {
 	sourceLink,
 } = Astro.props;
 
+type GroupedTechChild = {
+	slug: AssignableTechSlug;
+	label: string;
+	website?: string;
+	description?: string;
+};
+
 type GroupedTechEntry = {
 	slug: TechSlug;
 	label: string;
 	includeSelf: boolean;
-	children: Array<{ slug: AssignableTechSlug; label: string }>;
+	website?: string;
+	description?: string;
+	children: Array<GroupedTechChild>;
 };
 
 type GroupedTech = Array<{
@@ -65,6 +74,8 @@ const groupedTech: GroupedTech = (() => {
 					slug: TechSlug;
 					label: string;
 					includeSelf: boolean;
+					website?: string;
+					description?: string;
 					children: Set<AssignableTechSlug>;
 				}
 			>;
@@ -93,16 +104,19 @@ const groupedTech: GroupedTech = (() => {
 
 		const parentSlug =
 			ancestors.find((ancestor) => getTechMeta(ancestor).category !== 'group') ?? slug;
-		let parentEntry = groupEntry.entries.get(parentSlug);
-		if (!parentEntry) {
-			parentEntry = {
-				slug: parentSlug,
-				label: getTechDisplayName(parentSlug),
-				includeSelf: false,
-				children: new Set<AssignableTechSlug>(),
-			};
-			groupEntry.entries.set(parentSlug, parentEntry);
-		}
+	let parentEntry = groupEntry.entries.get(parentSlug);
+	if (!parentEntry) {
+		const parentMeta = getTechMeta(parentSlug);
+		parentEntry = {
+			slug: parentSlug,
+			label: getTechDisplayName(parentSlug),
+			includeSelf: false,
+			website: parentMeta.website,
+			description: parentMeta.description,
+			children: new Set<AssignableTechSlug>(),
+		};
+		groupEntry.entries.set(parentSlug, parentEntry);
+	}
 
 		if (parentSlug === slug) {
 			parentEntry.includeSelf = true;
@@ -116,15 +130,26 @@ const groupedTech: GroupedTech = (() => {
 			key,
 			label: value.label,
 			entries: Array.from(value.entries.values())
-				.map((entry) => ({
-					...entry,
-					children: Array.from(entry.children)
-						.map((childSlug) => ({
-							slug: childSlug,
-							label: getTechMeta(childSlug).label,
-						}))
-						.sort((a, b) => a.label.localeCompare(b.label, 'en')),
-				}))
+				.map((entry) => {
+					const childEntries = Array.from(entry.children)
+						.map((childSlug) => {
+							const childMeta = getTechMeta(childSlug);
+							return {
+								slug: childSlug,
+								label: childMeta.label,
+								website: childMeta.website,
+								description: childMeta.description,
+							};
+						})
+						.sort((a, b) => a.label.localeCompare(b.label, 'en'));
+					const parentMeta = getTechMeta(entry.slug);
+					return {
+						...entry,
+						website: entry.website ?? parentMeta.website,
+						description: entry.description ?? parentMeta.description,
+						children: childEntries,
+					};
+				})
 				.sort((a, b) => a.label.localeCompare(b.label, 'en')),
 		}))
 		.sort((a, b) => a.label.localeCompare(b.label, 'en'));
@@ -243,10 +268,15 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 					align-items: center;
 					font-weight: 600;
 					color: rgb(var(--gray-dark));
+					text-decoration: none;
+					transition: color 0.2s ease;
 				}
 				.tech-parent--group {
 					font-weight: 500;
 					color: rgb(var(--gray));
+				}
+				.tech-parent:hover {
+					color: var(--accent);
 				}
 				.tech-children {
 					margin-left: 1.1rem;
@@ -255,6 +285,16 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 				.tech-children li {
 					color: rgb(var(--gray-dark));
 					font-size: 0.95rem;
+				}
+				.tech-child {
+					display: inline-flex;
+					align-items: center;
+					color: inherit;
+					text-decoration: none;
+					transition: color 0.2s ease;
+				}
+				.tech-child:hover {
+					color: var(--accent);
 				}
 			.prose {
 				background: var(--card-background);
@@ -335,18 +375,47 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 										<ul class="tech-parent-list">
 											{group.entries.map((entry) => (
 												<li>
+												{entry.website ? (
+													<a
+														class:list={['tech-parent', { 'tech-parent--group': !entry.includeSelf }]}
+														href={entry.website}
+														target="_blank"
+														rel="noreferrer"
+														title={entry.description ?? undefined}
+													>
+														{entry.label}
+													</a>
+												) : (
 													<span
 														class:list={['tech-parent', { 'tech-parent--group': !entry.includeSelf }]}
+														title={entry.description ?? undefined}
 													>
 														{entry.label}
 													</span>
-													{entry.children.length > 0 && (
-														<ul class="tech-children">
-															{entry.children.map((child) => (
-																<li>{child.label}</li>
-															))}
-														</ul>
-													)}
+												)}
+												{entry.children.length > 0 && (
+													<ul class="tech-children">
+														{entry.children.map((child) => (
+															<li>
+																{child.website ? (
+																	<a
+																		class="tech-child"
+																		href={child.website}
+																		target="_blank"
+																		rel="noreferrer"
+																		title={child.description ?? undefined}
+																	>
+																		{child.label}
+																	</a>
+																) : (
+																	<span class="tech-child" title={child.description ?? undefined}>
+																		{child.label}
+																	</span>
+																)}
+															</li>
+														))}
+													</ul>
+												)}
 												</li>
 											))}
 										</ul>
