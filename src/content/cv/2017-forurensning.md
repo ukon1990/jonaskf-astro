@@ -1,12 +1,12 @@
 ---
-title: "Forurensning Web Client"
-role: "Frontend Developer"
-employer: "Inmeta"
-customer: "Miljødirektoratet"
-projectName: "Forurensning – prototype ny webklient"
-startDate: "2017-08-01"
-endDate: "2018-12-01"
-summary: "I designed and built a modern Angular 7 web client for Miljødirektoratet’s legacy Forurensning application, enabling secure REST‑API communication with a .NET/Entity Framework back‑end."
+title: 'Forurensning Web Client'
+role: 'Frontend Developer'
+employer: 'Crayon Consulting AS'
+customer: 'Miljødirektoratet'
+projectName: 'Forurensning – prototype ny webklient'
+startDate: '2017-08-01'
+endDate: '2018-12-01'
+summary: 'I designed and built a modern Angular 7 web client for Miljødirektoratet’s legacy Forurensning application, enabling secure REST‑API communication with a .NET/Entity Framework back‑end.'
 tech:
   - angular
   - jasmine

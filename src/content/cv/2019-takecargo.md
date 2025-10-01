@@ -1,7 +1,7 @@
 ---
 title: 'TakeCargo — Digital Transport Platform'
 role: 'Full-stack Developer'
-employer: 'Inmeta'
+employer: 'Crayon Consulting AS'
 customer: 'Tradesolution'
 customerUrl: 'https://www.tradesolution.no/'
 link: 'https://tradesolution.no/tjenester/takecargo/'

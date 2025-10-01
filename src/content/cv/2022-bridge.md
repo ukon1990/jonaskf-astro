@@ -1,7 +1,7 @@
 ---
 title: 'Bridge & Bridge Transport - Digital Supply-Chain Platform'
 role: 'Full-stack Developer'
-employer: 'Inmeta'
+employer: 'Crayon Consulting AS'
 customer: 'Tradesolution'
 customerUrl: 'https://www.tradesolution.no/'
 link: 'https://tradesolution.no/tjenester/bridge/'

@@ -1,7 +1,7 @@
 ---
 title: 'Norwegian Fish Auction'
 role: 'Fullstack Developer'
-employer: 'Inmeta'
+employer: 'Crayon Consulting AS'
 customer: 'Norwegian Fish Auction'
 customerUrl: 'https://nfa.no'
 link: 'https://nfa.no'

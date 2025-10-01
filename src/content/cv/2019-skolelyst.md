@@ -1,7 +1,7 @@
 ---
 title: 'Skolelyst – School Milk Service'
 role: 'Fullstack Developer'
-employer: 'Inmeta'
+employer: 'Crayon Consulting AS'
 customer: 'Tine'
 customerUrl: 'https://tine.no'
 link: https://www.skolelyst.no

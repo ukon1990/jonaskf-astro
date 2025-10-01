@@ -1,12 +1,12 @@
 ---
-title: "Folkemord og Holocaust i Norge"
-role: "Fullstack Developer"
-employer: "Inmeta"
-customer: "Holocaustsenteret"
-projectName: "Folkemord og Holocaust i Norge"
-startDate: "2017-05-01"
-endDate: "2019-10-01"
-summary: "I helped troubleshoot and fix hosting issues for Holocaustsenteret’s WordPress sites that were deployed on AWS."
+title: 'Folkemord og Holocaust i Norge'
+role: 'Fullstack Developer'
+employer: 'Crayon Consulting AS'
+customer: 'Holocaustsenteret'
+projectName: 'Folkemord og Holocaust i Norge'
+startDate: '2017-05-01'
+endDate: '2019-10-01'
+summary: 'I helped troubleshoot and fix hosting issues for Holocaustsenteret’s WordPress sites that were deployed on AWS.'
 tech:
   - php
   - wordpress
@@ -18,7 +18,7 @@ tech:
 
 ### Mission
 
-Holocaustsenteret maintained the sites **hlsenteret.no** and **folkemord.no** on WordPress, with map integration from Geodata, initially developed by Inmeta’s UX team.  
+Holocaustsenteret maintained the sites **hlsenteret.no** and **folkemord.no** on WordPress, with map integration from Geodata, initially developed by Crayon Consulting AS’s UX team.  
 The solution was hosted on **AWS**, later moved to an on‑premise environment.
 
 ### Highlights
