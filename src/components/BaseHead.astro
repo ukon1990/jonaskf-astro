@@ -55,3 +55,93 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image.src, Astro.url)} />
+
+<script is:inline>
+	(() => {
+		const root = document.documentElement;
+		let activeTheme = '';
+		let overrideTheme = '';
+		let lastTimeTheme = '';
+		let toggleInitialized = false;
+		const pickTimeTheme = () => {
+			const hour = new Date().getHours();
+			return hour >= 7 && hour < 20 ? 'light' : 'dark';
+		};
+		const updateToggle = () => {
+			const toggle = document.querySelector('[data-theme-toggle]');
+			if (!toggle) {
+				return;
+			}
+			const targetLabel = activeTheme === 'light' ? 'Use dark theme' : 'Use light theme';
+			toggle.textContent = targetLabel;
+			toggle.setAttribute('aria-label', targetLabel);
+			toggle.setAttribute('aria-pressed', overrideTheme ? 'true' : 'false');
+		};
+		const applyTheme = () => {
+			const timeTheme = pickTimeTheme();
+			if (timeTheme !== lastTimeTheme) {
+				lastTimeTheme = timeTheme;
+				overrideTheme = '';
+			}
+			const nextTheme = overrideTheme || timeTheme;
+			if (nextTheme !== activeTheme) {
+				activeTheme = nextTheme;
+				root.dataset.theme = nextTheme;
+			}
+			updateToggle();
+		};
+		const toggleOverride = () => {
+			if (overrideTheme) {
+				overrideTheme = '';
+			} else {
+				overrideTheme = activeTheme === 'light' ? 'dark' : 'light';
+				if (overrideTheme === pickTimeTheme()) {
+					overrideTheme = '';
+				}
+			}
+			applyTheme();
+		};
+		const scheduleNextCheck = () => {
+			const now = new Date();
+			const msUntilNextMinute =
+				60000 - now.getSeconds() * 1000 - now.getMilliseconds();
+			window.setTimeout(() => {
+				applyTheme();
+				scheduleNextCheck();
+			}, Math.max(msUntilNextMinute, 1000));
+		};
+		const setupToggle = () => {
+			if (toggleInitialized) {
+				updateToggle();
+				return;
+			}
+			const toggle = document.querySelector('[data-theme-toggle]');
+			if (!toggle) {
+				return;
+			}
+			toggleInitialized = true;
+			toggle.addEventListener('click', (event) => {
+				event.preventDefault();
+				toggleOverride();
+			});
+			updateToggle();
+		};
+		const boot = () => {
+			applyTheme();
+			scheduleNextCheck();
+			setupToggle();
+		};
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', () => {
+				setupToggle();
+			});
+		}
+		boot();
+		document.addEventListener('visibilitychange', () => {
+			if (!document.hidden) {
+				applyTheme();
+			}
+		});
+		window.addEventListener('focus', applyTheme);
+	})();
+</script>

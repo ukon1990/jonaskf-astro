@@ -1,0 +1,111 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'input'> {
+	label: string;
+}
+
+const {
+	label,
+	class: className,
+	id,
+	checked,
+	...inputProps
+} = Astro.props as Props;
+
+const inputId = id
+	?? `${(inputProps.name ?? 'filter')}-${(inputProps.value ?? 'option')
+		.toString()
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '-')}`;
+---
+
+<label class:list={['filter-checkbox', className]}>
+	<input type="checkbox" id={inputId} checked={checked} {...inputProps} />
+	<span class="pill">
+		<span class="indicator" aria-hidden="true">
+			<svg viewBox="0 0 16 16" role="presentation">
+				<path d="M6.173 12.252 2.4 8.48l1.414-1.414 2.36 2.36 5.01-5.01 1.415 1.415-6.425 6.421z" />
+			</svg>
+		</span>
+		<span class="label-text">{label}</span>
+	</span>
+</label>
+<style>
+	.filter-checkbox {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		font-size: 0.95rem;
+		cursor: pointer;
+	}
+	.filter-checkbox input {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+	.filter-checkbox .pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.4rem 0.9rem;
+		border-radius: 999px;
+		border: 1px solid rgba(var(--gray), 0.3);
+		background: color-mix(
+			in srgb,
+			rgb(var(--gray-light)) 30%,
+			var(--card-background) 70%
+		);
+		transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+			box-shadow 0.2s ease;
+		color: rgb(var(--gray-dark));
+	}
+	.filter-checkbox .indicator {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.1rem;
+		height: 1.1rem;
+		border-radius: 0.6rem;
+		border: 2px solid rgba(var(--gray), 0.3);
+		background: transparent;
+		transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+	}
+	.filter-checkbox .indicator svg {
+		width: 0.65rem;
+		height: 0.65rem;
+		fill: currentColor;
+		color: transparent;
+	}
+	.filter-checkbox input:checked + .pill {
+		background: color-mix(
+			in srgb,
+			var(--accent) 12%,
+			var(--card-background) 88%
+		);
+		border-color: color-mix(
+			in srgb,
+			var(--accent) 45%,
+			var(--card-background) 55%
+		);
+		color: color-mix(
+			in srgb,
+			var(--accent-dark, var(--accent)) 70%,
+			rgb(var(--gray-dark)) 30%
+		);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent);
+	}
+	.filter-checkbox input:checked + .pill .indicator {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: white;
+	}
+	.filter-checkbox input:focus-visible + .pill {
+		outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+		outline-offset: 2px;
+	}
+	.filter-checkbox input:disabled + .pill {
+		opacity: 0.45;
+		cursor: not-allowed;
+	}
+</style>

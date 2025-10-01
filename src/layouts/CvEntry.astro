@@ -1,0 +1,440 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import {
+	getTechAncestors,
+	getTechDisplayName,
+	getTechMeta,
+} from '../data/tech';
+import type { AssignableTechSlug, TechCategory, TechSlug } from '../data/tech';
+
+export type CvEntryData = CollectionEntry<'cv'>['data'];
+
+type Props = CvEntryData;
+
+const {
+	title,
+	role,
+	employer,
+	customer,
+	customerUrl,
+	capacity = 'professional',
+	summary,
+	startDate,
+	endDate,
+	location,
+	tech,
+	heroImage,
+	link,
+	sourceLink,
+} = Astro.props;
+
+type GroupedTechChild = {
+	slug: AssignableTechSlug;
+	label: string;
+	website?: string;
+	description?: string;
+};
+
+type GroupedTechEntry = {
+	slug: TechSlug;
+	label: string;
+	includeSelf: boolean;
+	website?: string;
+	description?: string;
+	children: Array<GroupedTechChild>;
+};
+
+type GroupedTech = Array<{
+	key: TechSlug | 'other';
+	label: string;
+	entries: Array<GroupedTechEntry>;
+}>;
+
+const groupedTech: GroupedTech = (() => {
+	const techSlugs = tech as AssignableTechSlug[];
+	const categoryToGroup: Partial<Record<TechCategory, TechSlug>> = {
+		database: 'data',
+		analytics: 'analytics',
+		design: 'design',
+		testing: 'testing',
+		process: 'process',
+		language: 'languages',
+	};
+	const groupMap = new Map<
+		TechSlug | 'other',
+		{
+			label: string;
+			entries: Map<
+				TechSlug,
+				{
+					slug: TechSlug;
+					label: string;
+					includeSelf: boolean;
+					website?: string;
+					description?: string;
+					children: Set<AssignableTechSlug>;
+				}
+			>;
+		}
+	>();
+
+	for (const slug of techSlugs) {
+		const meta = getTechMeta(slug);
+		const ancestors = getTechAncestors(slug);
+		const mappedGroupSlug = categoryToGroup[meta.category];
+		const groupSlug =
+			(mappedGroupSlug && getTechMeta(mappedGroupSlug).category === 'group'
+				? mappedGroupSlug
+				: ancestors.find((ancestor) => getTechMeta(ancestor).category === 'group')) ?? null;
+		const groupKey = groupSlug ?? 'other';
+		const groupLabel = groupSlug ? getTechMeta(groupSlug).label : 'Other';
+
+		let groupEntry = groupMap.get(groupKey);
+		if (!groupEntry) {
+			groupEntry = {
+				label: groupLabel,
+				entries: new Map(),
+			};
+			groupMap.set(groupKey, groupEntry);
+		}
+
+		const parentSlug =
+			ancestors.find((ancestor) => getTechMeta(ancestor).category !== 'group') ?? slug;
+	let parentEntry = groupEntry.entries.get(parentSlug);
+	if (!parentEntry) {
+		const parentMeta = getTechMeta(parentSlug);
+		parentEntry = {
+			slug: parentSlug,
+			label: getTechDisplayName(parentSlug),
+			includeSelf: false,
+			website: parentMeta.website,
+			description: parentMeta.description,
+			children: new Set<AssignableTechSlug>(),
+		};
+		groupEntry.entries.set(parentSlug, parentEntry);
+	}
+
+		if (parentSlug === slug) {
+			parentEntry.includeSelf = true;
+		} else {
+			parentEntry.children.add(slug);
+		}
+	}
+
+	return Array.from(groupMap.entries())
+		.map(([key, value]) => ({
+			key,
+			label: value.label,
+			entries: Array.from(value.entries.values())
+				.map((entry) => {
+					const childEntries = Array.from(entry.children)
+						.map((childSlug) => {
+							const childMeta = getTechMeta(childSlug);
+							return {
+								slug: childSlug,
+								label: childMeta.label,
+								website: childMeta.website,
+								description: childMeta.description,
+							};
+						})
+						.sort((a, b) => a.label.localeCompare(b.label, 'en'));
+					const parentMeta = getTechMeta(entry.slug);
+					return {
+						...entry,
+						website: entry.website ?? parentMeta.website,
+						description: entry.description ?? parentMeta.description,
+						children: childEntries,
+					};
+				})
+				.sort((a, b) => a.label.localeCompare(b.label, 'en')),
+		}))
+		.sort((a, b) => a.label.localeCompare(b.label, 'en'));
+})();
+
+const hasHeroImage = Boolean(heroImage);
+
+const formatPeriod = (start: Date, end?: Date | null) => {
+	const formatter = new Intl.DateTimeFormat('en', {
+		year: 'numeric',
+		month: 'short',
+	});
+	const startLabel = formatter.format(start);
+	const endLabel = end ? formatter.format(end) : 'Present';
+	return `${startLabel} – ${endLabel}`;
+};
+---
+
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`${title}${customer ? ` — ${customer}` : ''}`}
+			description={summary}
+		/>
+		<style>
+			main {
+				width: calc(100% - 2rem);
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 3rem 1rem;
+			}
+			.entry {
+				display: grid;
+				gap: 2rem;
+			}
+			.entry--no-hero {
+				gap: 1.5rem;
+			}
+			.header {
+				margin-bottom: 2rem;
+			}
+			.entry--no-hero .header {
+				margin-bottom: 1.5rem;
+			}
+			.header h1 {
+				margin-bottom: 0.25rem;
+			}
+			.role {
+				margin: 0.25rem 0 0 0;
+					color: rgb(var(--gray));
+					font-weight: 600;
+				}
+				.customer-link {
+					text-decoration: none;
+					font-weight: 600;
+					color: var(--accent);
+				}
+				.customer-link:hover {
+					color: var(--accent-dark, var(--accent));
+				}
+				.location {
+					margin: 0.25rem 0 0 0;
+					color: rgb(var(--gray));
+				}
+			.summary {
+				margin-top: 1rem;
+				font-size: 1.05em;
+				color: rgb(var(--gray-dark));
+			}
+			.link {
+				margin-top: 1rem;
+			}
+			.hero-image {
+				margin: 2rem 0;
+				border-radius: 16px;
+				overflow: hidden;
+				box-shadow: var(--box-shadow);
+			}
+				.tags {
+					margin: 1.5rem 0 0 0;
+				}
+				.tech-summary {
+					margin-top: 1.75rem;
+					padding-top: 1.25rem;
+					border-top: 1px solid rgba(var(--gray), 0.2);
+				}
+				.tech-summary h2 {
+					margin-bottom: 1rem;
+					font-size: 1.05rem;
+				}
+				.tech-groups {
+					display: grid;
+					gap: 1.25rem;
+					grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+				}
+				.tech-group {
+					display: flex;
+					flex-direction: column;
+					gap: 0.5rem;
+				}
+				.tech-group h3 {
+					margin: 0;
+					font-size: 0.95rem;
+					color: rgb(var(--gray-dark));
+				}
+				.tech-parent-list,
+				.tech-children {
+					margin: 0;
+					padding: 0;
+					list-style: none;
+					display: grid;
+					gap: 0.45rem;
+				}
+				.tech-parent {
+					display: inline-flex;
+					align-items: center;
+					font-weight: 600;
+					color: rgb(var(--gray-dark));
+					text-decoration: none;
+					transition: color 0.2s ease;
+				}
+				.tech-parent--group {
+					font-weight: 500;
+					color: rgb(var(--gray));
+				}
+				.tech-parent:hover {
+					color: var(--accent);
+				}
+				.tech-children {
+					margin-left: 1.1rem;
+					gap: 0.35rem;
+				}
+				.tech-children li {
+					color: rgb(var(--gray-dark));
+					font-size: 0.95rem;
+				}
+				.tech-child {
+					display: inline-flex;
+					align-items: center;
+					color: inherit;
+					text-decoration: none;
+					transition: color 0.2s ease;
+				}
+				.tech-child:hover {
+					color: var(--accent);
+				}
+			.prose {
+				background: var(--card-background);
+				padding: 2rem;
+				border-radius: 16px;
+				box-shadow: var(--card-shadow);
+			}
+			.entry--no-hero .prose {
+				padding: 0;
+				background: transparent;
+				box-shadow: none;
+			}
+			.entry--no-hero .prose > :first-child {
+				margin-top: 0;
+			}
+			@media (max-width: 720px) {
+				main {
+					padding: 2rem 1rem 4rem 1rem;
+				}
+				.prose {
+					padding: 1.5rem;
+				}
+				.entry--no-hero .prose {
+					padding: 0;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+			<main>
+				<article class:list={['entry', { 'entry--with-hero': hasHeroImage, 'entry--no-hero': !hasHeroImage }]}
+				>
+				<header class="header">
+					<p class="meta">
+						{customer && (
+							<>
+								{customerUrl ? (
+									<a class="customer-link" href={customerUrl} target="_blank" rel="noreferrer">
+										{customer}
+										<span aria-hidden="true"> ↗</span>
+									</a>
+								) : (
+									<span>{customer}</span>
+								)}
+								{ ' · ' }
+							</>
+						)}
+						{formatPeriod(startDate, endDate)}
+					</p>
+					<h1>{title}</h1>
+					<p class="role">
+						{role}
+						{employer && ` · ${employer}`}
+					</p>
+					<p class="meta capacity">
+						{capacity === 'hobby' ? 'Hobby project' : 'Professional engagement'}
+					</p>
+					{location && <p class="location">{location}</p>}
+					<p class="summary">{summary}</p>
+					{link && (
+						<p class="link">
+							<a href={link} target="_blank" rel="noreferrer">Visit project ↗</a>
+						</p>
+					)}
+					{sourceLink && (
+						<p class="link">
+							<a href={sourceLink} target="_blank" rel="noreferrer">View source on GitHub ↗</a>
+						</p>
+					)}
+					{groupedTech.length > 0 && (
+						<section class="tech-summary" aria-labelledby="tech-stack-heading">
+							<h2 id="tech-stack-heading">Tech &amp; tooling</h2>
+							<div class="tech-groups">
+								{groupedTech.map((group) => (
+									<div class="tech-group">
+										<h3>{group.label}</h3>
+										<ul class="tech-parent-list">
+											{group.entries.map((entry) => (
+												<li>
+												{entry.website ? (
+													<a
+														class:list={['tech-parent', { 'tech-parent--group': !entry.includeSelf }]}
+														href={entry.website}
+														target="_blank"
+														rel="noreferrer"
+														title={entry.description ?? undefined}
+													>
+														{entry.label}
+													</a>
+												) : (
+													<span
+														class:list={['tech-parent', { 'tech-parent--group': !entry.includeSelf }]}
+														title={entry.description ?? undefined}
+													>
+														{entry.label}
+													</span>
+												)}
+												{entry.children.length > 0 && (
+													<ul class="tech-children">
+														{entry.children.map((child) => (
+															<li>
+																{child.website ? (
+																	<a
+																		class="tech-child"
+																		href={child.website}
+																		target="_blank"
+																		rel="noreferrer"
+																		title={child.description ?? undefined}
+																	>
+																		{child.label}
+																	</a>
+																) : (
+																	<span class="tech-child" title={child.description ?? undefined}>
+																		{child.label}
+																	</span>
+																)}
+															</li>
+														))}
+													</ul>
+												)}
+												</li>
+											))}
+										</ul>
+								</div>
+								))}
+							</div>
+						</section>
+					)}
+				</header>
+				{heroImage && (
+					<div class="hero-image">
+						<Image width={960} height={540} src={heroImage} alt={title} />
+					</div>
+				)}
+				<div class="prose">
+					<slot />
+				</div>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>

@@ -1,0 +1,478 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import CvExperienceCard from '../../components/CvExperienceCard.astro';
+import CvExperienceFilters from '../../components/CvExperienceFilters.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { getTechDisplayName, getTechMeta, getTechAncestors } from '../../data/tech';
+import type { AssignableTechSlug, TechSlug } from '../../data/tech';
+
+type CvEntry = CollectionEntry<'cv'>;
+
+const allExperiences: CvEntry[] = (await getCollection('cv'))
+	.filter((entry) => !entry.data.draft)
+	.sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf());
+
+const professionalExperiences = allExperiences.filter(
+	(experience) => (experience.data.capacity ?? 'professional') !== 'hobby',
+);
+
+const highlightedExperiences: CvEntry[] = professionalExperiences.slice(0, 2);
+const highlightedExperienceIds = new Set(highlightedExperiences.map((experience) => experience.id));
+
+const remainingExperiences: CvEntry[] = allExperiences.filter(
+	(experience) => !highlightedExperienceIds.has(experience.id),
+);
+
+const techUsageCounts = new Map<AssignableTechSlug, number>();
+
+for (const experience of allExperiences) {
+	const uniqueTech = new Set(experience.data.tech);
+	for (const tech of uniqueTech) {
+		const currentCount = techUsageCounts.get(tech) ?? 0;
+		techUsageCounts.set(tech, currentCount + 1);
+	}
+}
+
+const formatProjects = (count: number) => {
+	const suffix = count === 1 ? 'project' : 'projects';
+	return `${count} ${suffix}`;
+};
+
+type TechFilterOption = {
+	tech: AssignableTechSlug;
+	count: number;
+	label: string;
+	groupId: string;
+	groupLabel: string;
+};
+
+const getPrimaryGroupSlug = (slug: AssignableTechSlug): string => {
+    const ancestors = getTechAncestors(slug);
+    for (const ancestor of ancestors) {
+        const meta = getTechMeta(ancestor);
+        if (meta?.category === 'group') {
+            return ancestor;
+        }
+    }
+    const meta = getTechMeta(slug);
+    if (meta?.category === 'group') {
+        return slug;
+    }
+    return 'other';
+};
+
+const describeGroup = (groupId: string) => {
+	if (groupId === 'other') {
+		return { id: groupId, label: 'Other' };
+	}
+	const meta = getTechMeta(groupId as TechSlug);
+	return { id: groupId, label: meta?.label ?? 'Other' };
+};
+
+const techFilters: TechFilterOption[] = Array.from(techUsageCounts.entries())
+	.map(([tech, count]) => {
+		const groupId = getPrimaryGroupSlug(tech);
+		const groupLabel = describeGroup(groupId).label;
+		return {
+			tech,
+			count,
+			label: `${getTechDisplayName(tech)} (${formatProjects(count)})`,
+			groupId,
+			groupLabel,
+		};
+	})
+	.filter((filter) => filter.count > 0)
+	.sort((a, b) => {
+		if (a.groupLabel !== b.groupLabel) return a.groupLabel.localeCompare(b.groupLabel);
+		if (b.count !== a.count) return b.count - a.count;
+		return a.tech.localeCompare(b.tech);
+	});
+
+const HIGHLIGHT_MESSAGE_WITH_ENTRIES = 'Recent professional highlights first, followed by every engagement.';
+const HIGHLIGHT_MESSAGE_EMPTY = 'All engagements listed chronologically.';
+
+const capacityFilters = ['professional', 'hobby'].filter((capacity) =>
+	allExperiences.some((experience) => (experience.data.capacity ?? 'professional') === capacity),
+);
+
+function formatCapacityLabel(value: string) {
+	return value === 'hobby' ? 'Hobby projects' : 'Professional engagements';
+}
+
+const capacityOptions = capacityFilters.map((capacity) => ({
+	value: capacity,
+	label: formatCapacityLabel(capacity),
+}));
+
+const highlightIntro =
+	highlightedExperiences.length > 0
+		? HIGHLIGHT_MESSAGE_WITH_ENTRIES
+		: HIGHLIGHT_MESSAGE_EMPTY;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Experience — ${SITE_TITLE}`}
+			description={`${SITE_DESCRIPTION} · Selected client engagements and projects.`}
+		/>
+		<style>
+			.hero {
+				display: grid;
+				gap: 1.5rem;
+				margin-bottom: 3rem;
+			}
+			.hero-header h1 {
+				margin: 0;
+			}
+			.hero-header .meta {
+				margin: 0;
+				color: rgb(var(--gray));
+				font-weight: 600;
+			}
+			.hero-grid {
+				display: grid;
+				gap: 1.5rem;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+			}
+			.card-hero-image {
+				margin-bottom: 1rem;
+				border-radius: 16px;
+				overflow: hidden;
+				box-shadow: var(--box-shadow);
+			}
+			.card-hero-image img {
+				display: block;
+				width: 100%;
+				height: auto;
+			}
+			.filters {
+				display: grid;
+				gap: 1.75rem;
+				margin-bottom: 2.5rem;
+				padding: 1.75rem 1.5rem;
+				background: var(--card-background);
+				border-radius: 20px;
+				border: 1px solid rgba(var(--gray), 0.12);
+				box-shadow: var(--box-shadow);
+			}
+			.filters-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 1rem;
+			}
+			.filters-header h2 {
+				margin: 0;
+				font-size: 1.1rem;
+				color: rgb(var(--gray-dark));
+			}
+			.filters-reset {
+				padding: 0.45rem 0.9rem;
+				border-radius: 12px;
+				border: 1px solid rgba(var(--gray), 0.25);
+				background: transparent;
+				font-size: 0.85rem;
+				font-weight: 600;
+				color: rgb(var(--gray));
+				cursor: pointer;
+				transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+			}
+			.filters-reset:hover {
+				color: var(--accent);
+				border-color: color-mix(in srgb, var(--accent) 50%, rgba(var(--gray), 0.25));
+			}
+			.filters-reset:focus-visible {
+				outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+				outline-offset: 2px;
+			}
+			.filters-body {
+				display: grid;
+				gap: 1.5rem;
+				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+				align-items: start;
+			}
+			.filters-select {
+				display: flex;
+				flex-direction: column;
+				gap: 0.6rem;
+			}
+			.filters-select span,
+			.filters-select legend {
+				font-weight: 600;
+				color: rgb(var(--gray-dark));
+			}
+			.filters-select select {
+				padding: 0.65rem 0.85rem;
+				border-radius: 12px;
+				border: 1px solid rgba(var(--gray), 0.2);
+				font-size: 1rem;
+				font-family: inherit;
+				background: var(--card-background);
+				transition: border-color 0.2s ease, box-shadow 0.2s ease;
+			}
+			.filters-select select:hover {
+				border-color: color-mix(in srgb, var(--accent) 45%, var(--card-background) 55%);
+			}
+			.filters-select select:focus-visible {
+				border-color: var(--accent);
+				box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+				outline: none;
+			}
+			.tech-accordion {
+				display: grid;
+				gap: 0.75rem;
+			}
+			.tech-group {
+				border: 1px solid rgba(var(--gray), 0.12);
+				border-radius: 16px;
+				background: var(--card-background);
+				transition: border-color 0.2s ease, box-shadow 0.2s ease;
+			}
+			.tech-group[open] {
+				border-color: color-mix(in srgb, var(--accent) 35%, rgba(var(--gray), 0.12));
+				box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 16%, transparent);
+			}
+			.tech-group summary {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 0.75rem;
+				padding: 0.85rem 1rem;
+				cursor: pointer;
+				font-weight: 600;
+				color: rgb(var(--gray-dark));
+				list-style: none;
+			}
+			.tech-group summary::-webkit-details-marker {
+				display: none;
+			}
+			.tech-group summary:focus-visible {
+				outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+				outline-offset: 2px;
+			}
+			.tech-group-title {
+				flex: 1;
+			}
+			.tech-group-count {
+				font-size: 0.85rem;
+				color: rgb(var(--gray));
+				font-weight: 500;
+			}
+			.tech-options {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				padding: 0 1rem 1rem;
+			}
+			.timeline {
+				display: grid;
+				gap: 1.5rem;
+			}
+			.card h2 {
+				margin-bottom: 0.25rem;
+			}
+			.role {
+				margin: 0;
+				color: rgb(var(--gray));
+				font-weight: 600;
+			}
+			.card .summary {
+				margin-top: 0.75rem;
+				margin-bottom: 1rem;
+			}
+			.tags li {
+				padding: 0.25rem 0.75rem;
+				border-radius: 999px;
+				background: var(--tag-background);
+				font-size: 0.85rem;
+				color: rgb(var(--gray-dark));
+			}
+			.empty-state {
+				margin-top: 2rem;
+				padding: 1.5rem;
+				border-radius: 16px;
+				background: rgba(var(--gray-light), 0.4);
+				text-align: center;
+				font-weight: 600;
+				color: rgb(var(--gray));
+			}
+			@media (max-width: 960px) {
+				.hero-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main class="page-shell">
+			<section class="hero" aria-label="Experience overview" data-role="highlight-section">
+				<header class="hero-header">
+					<h1>Experience</h1>
+				</header>
+			</section>
+
+			<CvExperienceFilters
+				capacityOptions={capacityOptions}
+				techFilters={techFilters}
+			/>
+
+			{highlightedExperiences.length > 0 && (
+				<div>
+					<p
+						class="meta"
+						data-role="highlight-message"
+						data-with-highlights={HIGHLIGHT_MESSAGE_WITH_ENTRIES}
+						data-without-highlights={HIGHLIGHT_MESSAGE_EMPTY}
+					>
+						{highlightIntro}
+					</p>
+					<section class="timeline" aria-label="Most recent professional engagements" data-role="highlight-list">
+						{highlightedExperiences.map((experience) => (
+							<CvExperienceCard experience={experience} variant="highlight" />
+						))}
+					</section>
+				</div>
+			)}
+
+			{remainingExperiences.length > 0 && (
+				<section class="timeline" aria-label="All engagements" data-role="experience-list">
+					{remainingExperiences.map((experience) => (
+						<CvExperienceCard experience={experience} variant="list" />
+					))}
+				</section>
+			)}
+
+			<p class="empty-state" data-role="experience-empty" hidden={allExperiences.length > 0}>No engagements found. Adjust your filters and try again.</p>
+		</main>
+		<Footer />
+
+			{(capacityFilters.length > 0 || techFilters.length > 0) && (
+			<script type="module">
+				(() => {
+					const form = document.querySelector('#experience-filters');
+					if (!form) {
+						return;
+					}
+
+					const dom = {
+						highlightSection: document.querySelector("[data-role='highlight-section']"),
+						highlightList: document.querySelector("[data-role='highlight-list']"),
+						highlightMessage: document.querySelector("[data-role='highlight-message']"),
+						featuredEntries: Array.from(document.querySelectorAll("[data-entry='featured']")),
+						experienceEntries: Array.from(document.querySelectorAll("[data-entry='experience']")),
+						listSection: document.querySelector("[data-role='experience-list']"),
+						emptyState: document.querySelector("[data-role='experience-empty']"),
+						techGroups: Array.from(form.querySelectorAll("[data-role='tech-group']")),
+					};
+
+					const highlightMessages = {
+						withHighlights:
+							dom.highlightMessage?.dataset.withHighlights || dom.highlightMessage?.textContent || '',
+						withoutHighlights:
+							dom.highlightMessage?.dataset.withoutHighlights || dom.highlightMessage?.textContent || '',
+					};
+
+					const ensureSelectedGroupsOpen = () => {
+						dom.techGroups.forEach((group) => {
+							if (group.hasAttribute('open')) return;
+							const hasChecked = group.querySelector("input[name='tech']:checked");
+							if (hasChecked) {
+								group.setAttribute('open', '');
+							}
+						});
+					};
+
+					const parseTech = (value) => (value ? value.split('|').filter(Boolean) : []);
+
+					const readFormState = () => {
+						const capacity = form.elements.namedItem('capacity')?.value ?? 'all';
+						const tech = Array.from(form.querySelectorAll("input[name='tech']:checked"))
+							.map((input) => (input instanceof HTMLInputElement ? input.value : ''))
+							.filter(Boolean);
+						return { capacity, tech };
+					};
+
+					const matches = (element, state) => {
+						if (!element) return false;
+						const entryCapacity = element.dataset.capacity || 'professional';
+						if (state.capacity !== 'all' && entryCapacity !== state.capacity) {
+							return false;
+						}
+
+						if (state.tech.length === 0) {
+							return true;
+						}
+
+						const entryTech = parseTech(element.dataset.tech || '');
+						return state.tech.every((tech) => entryTech.includes(tech));
+					};
+
+					const filterEntries = (entries, state) => {
+						let visibleCount = 0;
+						entries.forEach((entry) => {
+							const visible = matches(entry, state);
+							entry.hidden = !visible;
+							if (visible) visibleCount += 1;
+						});
+						return visibleCount;
+					};
+
+					const update = () => {
+						const state = readFormState();
+						const visibleHighlights = filterEntries(dom.featuredEntries, state);
+						const visibleExperiences = filterEntries(dom.experienceEntries, state);
+
+						if (dom.highlightList) {
+							dom.highlightList.hidden = visibleHighlights === 0;
+						}
+
+						if (dom.highlightSection) {
+							dom.highlightSection.dataset.hasHighlights = visibleHighlights > 0 ? 'true' : 'false';
+						}
+
+						if (dom.highlightMessage) {
+							const message =
+								visibleHighlights > 0
+									? highlightMessages.withHighlights
+									: highlightMessages.withoutHighlights;
+							if (message) {
+								dom.highlightMessage.textContent = message;
+							}
+						}
+
+						if (dom.listSection) {
+							const hasEntries = dom.experienceEntries.length > 0;
+							dom.listSection.hidden = hasEntries && visibleExperiences === 0;
+						}
+
+						if (dom.emptyState) {
+							dom.emptyState.hidden = visibleHighlights + visibleExperiences > 0;
+						}
+
+						ensureSelectedGroupsOpen();
+					};
+
+					form.addEventListener('input', update);
+					form.addEventListener('change', update);
+					form.addEventListener('reset', () => {
+						requestAnimationFrame(() => {
+							dom.techGroups.forEach((group) => {
+								const defaultOpen = group.dataset.defaultOpen === 'true';
+								group.toggleAttribute('open', defaultOpen);
+							});
+							update();
+						});
+					});
+
+					update();
+				})();
+			</script>
+		)}
+	</body>
+</html>

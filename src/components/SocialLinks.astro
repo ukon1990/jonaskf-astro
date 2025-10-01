@@ -1,0 +1,103 @@
+---
+import { markHTMLString } from 'astro/runtime/server/index.js';
+import GithubIcon from '../icons/github.svg?raw';
+import LinkedinIcon from '../icons/linkedin.svg?raw';
+
+const { class: className = '', justify = 'flex-start' } = Astro.props;
+
+const inlineStyle = `--social-links-justify: ${justify};`;
+
+type SocialLink = {
+  id: string;
+  href: string;
+  label: string;
+  title?: string;
+  external?: boolean;
+  icon: ReturnType<typeof markHTMLString>;
+};
+
+const socials: SocialLink[] = [
+  {
+    id: 'github',
+    href: 'https://github.com/ukon1990',
+    label: 'GitHub',
+    title: 'Visit Jonas on GitHub',
+    external: true,
+    icon: markHTMLString(GithubIcon),
+  },
+  {
+    id: 'linkedin',
+    href: 'https://www.linkedin.com/in/jonas-munthe-fl%C3%B8nes-07b68595',
+    label: 'LinkedIn',
+    title: 'Connect with Jonas on LinkedIn',
+    external: true,
+    icon: markHTMLString(LinkedinIcon),
+  },
+];
+---
+
+<ul class:list={['social-links', className]} style={inlineStyle}>
+  {
+    socials.map((social) => (
+      <li>
+        <a
+          href={social.href}
+          target={social.external ? '_blank' : undefined}
+          rel={social.external ? 'noreferrer noopener' : undefined}
+          title={social.title ?? social.label}
+        >
+          <span class="social-links__icon" aria-hidden="true" set:html={social.icon}></span>
+          <span>{social.label}</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .social-links {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    justify-content: var(--social-links-justify, flex-start);
+    list-style: none;
+  }
+
+  .social-links li {
+    margin: 0;
+  }
+
+  .social-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    text-decoration: none;
+    font-weight: 600;
+    color: rgb(var(--gray-dark));
+    transition: color 0.2s ease;
+  }
+
+  .social-links a:hover {
+    color: rgb(var(--accent));
+  }
+
+  .social-links__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+  }
+
+  .social-links__icon svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+
+  .social-links span {
+    line-height: 1;
+  }
+</style>

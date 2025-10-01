@@ -1,0 +1,114 @@
+---
+import FilterCheckbox from './FilterCheckbox.astro';
+import type { AssignableTechSlug } from '../data/tech';
+
+interface CapacityOption {
+	value: string;
+	label: string;
+}
+
+interface TechFilterOption {
+	tech: AssignableTechSlug;
+	label: string;
+	count: number;
+	groupId: string;
+	groupLabel: string;
+}
+
+interface TechFilterGroup {
+	id: string;
+	label: string;
+	techCount: number;
+	techCountLabel: string;
+	options: TechFilterOption[];
+}
+
+interface Props {
+	capacityOptions: CapacityOption[];
+	techFilters: TechFilterOption[];
+}
+
+const { capacityOptions, techFilters } = Astro.props;
+
+const formatTechnologyCount = (count: number) =>
+	`${count} ${count === 1 ? 'technology' : 'technologies'}`;
+
+const buildTechGroups = (filters: TechFilterOption[]): TechFilterGroup[] => {
+	const groups = new Map<string, TechFilterGroup>();
+	for (const filter of filters) {
+		const existing = groups.get(filter.groupId);
+		if (existing) {
+			existing.options.push(filter);
+			existing.techCount += 1;
+			existing.techCountLabel = formatTechnologyCount(existing.techCount);
+			continue;
+		}
+		groups.set(filter.groupId, {
+			id: filter.groupId,
+			label: filter.groupLabel,
+			techCount: 1,
+			techCountLabel: formatTechnologyCount(1),
+			options: [filter],
+		});
+	}
+	return Array.from(groups.values()).sort((a, b) => a.label.localeCompare(b.label));
+};
+
+const techFilterGroups = buildTechGroups(techFilters);
+
+const hasCapacityFilter = capacityOptions.length > 0;
+const hasTechFilter = techFilterGroups.length > 0;
+---
+
+{(hasCapacityFilter || hasTechFilter) && (
+	<form class="filters" id="experience-filters">
+		<header class="filters-header">
+			<h2>Filter engagements</h2>
+			<button type="reset" class="filters-reset">Clear filters</button>
+		</header>
+		<div class="filters-body">
+			{hasCapacityFilter && (
+				<label class="filters-select">
+					<span>Capacity</span>
+					<select name="capacity">
+						<option value="all">All capacities</option>
+						{capacityOptions.map((option) => (
+							<option value={option.value}>{option.label}</option>
+						))}
+					</select>
+				</label>
+			)}
+			{hasTechFilter && (
+				<fieldset class="filters-select filters-select--tech">
+					<legend>Tech</legend>
+					<div class="tech-accordion">
+						{techFilterGroups.map((group, index) => (
+							<details
+								class="tech-group"
+								data-role="tech-group"
+								data-group={group.id}
+								data-default-open={index === 0 ? 'true' : 'false'}
+								open={index === 0}
+							>
+									<summary>
+										<span class="tech-group-title">{group.label}</span>
+										<span class="tech-group-count">{group.techCountLabel}</span>
+								</summary>
+								<div class="tech-options">
+									{group.options.map((filter) => (
+										<FilterCheckbox
+											name="tech"
+											value={filter.tech}
+											label={filter.label}
+											class="tech-filter"
+										/>
+									))}
+								</div>
+							</details>
+						))}
+					</div>
+				</fieldset>
+			)}
+		</div>
+	</form>
+)}
