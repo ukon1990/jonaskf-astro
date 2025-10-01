@@ -1,12 +1,14 @@
 ---
-title: "Skolelyst – School Milk Service"
-role: "Fullstack Developer"
-employer: "Inmeta"
-customer: "Tine"
-projectName: "Skolelyst"
-startDate: "2019-08-01"
-endDate: "2019-12-01"
-summary: "I maintained and expanded Tine’s Skolelyst platform, adding new features, integrations, and security while ensuring a smooth experience for ~200 000 users."
+title: 'Skolelyst – School Milk Service'
+role: 'Fullstack Developer'
+employer: 'Inmeta'
+customer: 'Tine'
+customerUrl: 'https://tine.no'
+link: https://www.skolelyst.no
+projectName: 'Skolelyst'
+startDate: '2019-08-01'
+endDate: '2019-12-01'
+summary: 'I maintained and expanded Tine’s Skolelyst platform, adding new features, integrations, and security while ensuring a smooth experience for ~200 000 users.'
 tech:
   - react
   - java

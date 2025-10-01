@@ -1,12 +1,13 @@
 ---
-title: "Norwegian Fish Auction"
-role: "Fullstack Developer"
-employer: "Inmeta"
-customer: "Norwegian Fish Auction"
-customerUrl: "https://nfa.no"
-startDate: "2016-12-01"
-endDate: "2017-05-01"
-summary: "I built a scalable, server‑less auction platform on AWS, concentrating on the front‑end with Angular2/TypeScript and the back‑end with Spring Boot/Java 8 to support high‑volume B2B fish trading."
+title: 'Norwegian Fish Auction'
+role: 'Fullstack Developer'
+employer: 'Inmeta'
+customer: 'Norwegian Fish Auction'
+customerUrl: 'https://nfa.no'
+link: 'https://nfa.no'
+startDate: '2016-12-01'
+endDate: '2017-05-01'
+summary: 'I built a scalable, server‑less auction platform on AWS, concentrating on the front‑end with Angular2/TypeScript and the back‑end with Spring Boot/Java 8 to support high‑volume B2B fish trading.'
 tech:
   - angular
   - java
