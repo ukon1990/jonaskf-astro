@@ -13,6 +13,17 @@ const experiences = (await getCollection('cv'))
 	.filter((entry) => !entry.data.draft)
 	.sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf());
 
+const professionalExperiences = experiences.filter(
+	(experience) => (experience.data.capacity ?? 'professional') !== 'hobby',
+);
+
+const highlightExperiences = professionalExperiences.slice(0, 2);
+const highlightExperienceIds = new Set(highlightExperiences.map((experience) => experience.id));
+
+const restExperiences = experiences.filter(
+	(experience) => !highlightExperienceIds.has(experience.id),
+);
+
 const techUsageCounts = new Map<AssignableTechSlug, number>();
 
 for (const experience of experiences) {
@@ -42,8 +53,6 @@ const techFilters = Array.from(techUsageCounts.entries())
 
 const TECH_FILTER_LIMIT = 10;
 
-const [featuredExperience, ...restExperiences] = experiences;
-
 const capacityFilters = ['professional', 'hobby'].filter((capacity) =>
 	experiences.some((experience) => (experience.data.capacity ?? 'professional') === capacity),
 );
@@ -72,21 +81,32 @@ const formatCapacityLabel = (value: string) =>
 		<style>
 			.hero {
 				display: grid;
-				grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-				gap: 2rem;
+				gap: 1.5rem;
 				margin-bottom: 3rem;
-				align-items: center;
 			}
-			.hero h1 {
+			.hero-header h1 {
+				margin: 0;
+			}
+			.hero-header .meta {
+				margin: 0;
+				color: rgb(var(--gray));
+				font-weight: 600;
+			}
+			.hero-grid {
+				display: grid;
+				gap: 1.5rem;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+			}
+			.card-hero-image {
 				margin-bottom: 1rem;
-			}
-			.hero p {
-				margin: 0 0 1rem 0;
-			}
-			.hero-image {
 				border-radius: 16px;
 				overflow: hidden;
 				box-shadow: var(--box-shadow);
+			}
+			.card-hero-image img {
+				display: block;
+				width: 100%;
+				height: auto;
 			}
 			.filters {
 				display: grid;
@@ -227,7 +247,7 @@ const formatCapacityLabel = (value: string) =>
 				color: rgb(var(--gray));
 			}
 			@media (max-width: 960px) {
-				.hero {
+				.hero-grid {
 					grid-template-columns: 1fr;
 				}
 			}
@@ -236,55 +256,67 @@ const formatCapacityLabel = (value: string) =>
 	<body>
 		<Header />
 		<main class="page-shell">
-			{featuredExperience && (
-				<section
-					class="hero"
-					data-entry="featured"
-					data-capacity={featuredExperience.data.capacity ?? 'professional'}
-					data-tech={featuredExperience.data.tech.join('|')}
-				>
-					<div>
-						<h1>{featuredExperience.data.title}</h1>
-						<p class="meta">
-							{featuredExperience.data.customer && (
-								<span>{featuredExperience.data.customer}</span>
-							)}
-							{featuredExperience.data.customer && ' · '}
-							{formatPeriod(featuredExperience.data.startDate, featuredExperience.data.endDate)}
-						</p>
-						<p class="role">
-							{featuredExperience.data.role}
-							{featuredExperience.data.employer && ` · ${featuredExperience.data.employer}`}
-						</p>
-						{featuredExperience.data.location && (
-							<p class="meta location">{featuredExperience.data.location}</p>
-						)}
-						<p class="meta">
-							{featuredExperience.data.capacity === 'hobby'
-								? 'Hobby project'
-								: 'Professional engagement'}
-						</p>
-						<p>{featuredExperience.data.summary}</p>
-						{featuredExperience.data.tech.length > 0 && (
-							<ul class="tags">
-								{featuredExperience.data.tech.map((tag) => (
-									<li>{getTechDisplayName(tag)}</li>
-								))}
-							</ul>
-						)}
-					</div>
-					{featuredExperience.data.heroImage && (
-						<div class="hero-image">
-							<Image
-								width={960}
-								height={540}
-								src={featuredExperience.data.heroImage}
-								alt={featuredExperience.data.title}
-							/>
-						</div>
+			<section class="hero" aria-label="Experience overview">
+				<header class="hero-header">
+					<h1>Experience</h1>
+					{highlightExperiences.length > 0 ? (
+						<p class="meta">Recent professional highlights first, followed by every engagement.</p>
+					) : (
+						<p class="meta">All engagements listed chronologically.</p>
 					)}
-				</section>
-			)}
+				</header>
+				{highlightExperiences.length > 0 && (
+					<div class="hero-grid">
+						{highlightExperiences.map((experience) => (
+							<article
+								class="card card--featured"
+								data-entry="featured"
+								data-capacity={experience.data.capacity ?? 'professional'}
+								data-tech={experience.data.tech.join('|')}
+							>
+								<a class="card-link" href={`/cv/${experience.id}/`}>
+									{experience.data.heroImage && (
+										<div class="card-hero-image">
+											<Image
+												width={960}
+												height={540}
+												src={experience.data.heroImage}
+												alt={experience.data.title}
+											/>
+										</div>
+									)}
+									<h2>{experience.data.title}</h2>
+									<p class="meta">
+										{experience.data.customer && <span>{experience.data.customer}</span>}
+										{experience.data.customer && ' · '}
+										{formatPeriod(experience.data.startDate, experience.data.endDate)}
+									</p>
+									<p class="role">
+										{experience.data.role}
+										{experience.data.employer && ` · ${experience.data.employer}`}
+									</p>
+									{experience.data.location && (
+										<p class="meta location">{experience.data.location}</p>
+									)}
+									<p class="meta">
+										{experience.data.capacity === 'hobby'
+											? 'Hobby project'
+											: 'Professional engagement'}
+									</p>
+									<p class="summary">{experience.data.summary}</p>
+									{experience.data.tech.length > 0 && (
+										<ul class="tags">
+											{experience.data.tech.map((tag) => (
+												<li>{getTechDisplayName(tag)}</li>
+											))}
+										</ul>
+									)}
+								</a>
+							</article>
+						))}
+					</div>
+				)}
+			</section>
 
 			{(capacityFilters.length > 0 || techFilters.length > 0) && (
 				<form class="filters" id="experience-filters">
@@ -332,7 +364,7 @@ const formatCapacityLabel = (value: string) =>
 			)}
 
 			{restExperiences.length > 0 && (
-				<section class="timeline" aria-label="Professional experience" data-role="experience-list">
+				<section class="timeline" aria-label="All engagements" data-role="experience-list">
 					{restExperiences.map((experience) => (
 						<article
 							class="card"
@@ -381,7 +413,7 @@ const formatCapacityLabel = (value: string) =>
 			<script type="module">
 				const form = document.querySelector('#experience-filters');
 				if (form) {
-					const hero = document.querySelector("[data-entry='featured']");
+					const featuredEntries = Array.from(document.querySelectorAll("[data-entry='featured']"));
 					const experiences = Array.from(document.querySelectorAll("[data-entry='experience']"));
 					const listSection = document.querySelector("[data-role='experience-list']");
 					const emptyState = document.querySelector("[data-role='experience-empty']");
@@ -447,12 +479,13 @@ const formatCapacityLabel = (value: string) =>
 					};
 
 					const update = () => {
-						const heroVisible = hero ? matches(hero) : false;
-						if (hero) {
-							hero.hidden = !heroVisible;
-						}
+						let visibleCount = 0;
 
-						let visibleCount = heroVisible ? 1 : 0;
+						featuredEntries.forEach((entry) => {
+							const visible = matches(entry);
+							entry.hidden = !visible;
+							if (visible) visibleCount += 1;
+						});
 
 						experiences.forEach((experience) => {
 							const visible = matches(experience);
