@@ -55,3 +55,32 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image.src, Astro.url)} />
+
+<script is:inline>
+	(() => {
+		const root = document.documentElement;
+		let activeTheme = '';
+		const pickTheme = () => {
+			const hour = new Date().getHours();
+			return hour >= 7 && hour < 20 ? 'light' : 'dark';
+		};
+		const applyTheme = () => {
+			const nextTheme = pickTheme();
+			if (nextTheme !== activeTheme) {
+				root.dataset.theme = nextTheme;
+				activeTheme = nextTheme;
+			}
+		};
+		const scheduleNextCheck = () => {
+			const now = new Date();
+			const msUntilNextMinute =
+				60000 - now.getSeconds() * 1000 - now.getMilliseconds();
+			window.setTimeout(() => {
+				applyTheme();
+				scheduleNextCheck();
+			}, Math.max(msUntilNextMinute, 1000));
+		};
+		applyTheme();
+		scheduleNextCheck();
+	})();
+</script>

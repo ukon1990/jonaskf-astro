@@ -51,7 +51,11 @@ const inputId = id
 		padding: 0.4rem 0.9rem;
 		border-radius: 999px;
 		border: 1px solid rgba(var(--gray), 0.3);
-		background: color-mix(in srgb, var(--gray-light) 30%, #fff 70%);
+		background: color-mix(
+			in srgb,
+			rgb(var(--gray-light)) 30%,
+			var(--card-background) 70%
+		);
 		transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease,
 			box-shadow 0.2s ease;
 		color: rgb(var(--gray-dark));
@@ -74,9 +78,21 @@ const inputId = id
 		color: transparent;
 	}
 	.filter-checkbox input:checked + .pill {
-		background: color-mix(in srgb, var(--accent) 12%, #fff 88%);
-		border-color: color-mix(in srgb, var(--accent) 45%, #fff 55%);
-		color: color-mix(in srgb, var(--accent-dark, var(--accent)) 70%, #000 30%);
+		background: color-mix(
+			in srgb,
+			var(--accent) 12%,
+			var(--card-background) 88%
+		);
+		border-color: color-mix(
+			in srgb,
+			var(--accent) 45%,
+			var(--card-background) 55%
+		);
+		color: color-mix(
+			in srgb,
+			var(--accent-dark, var(--accent)) 70%,
+			rgb(var(--gray-dark)) 30%
+		);
 		box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent);
 	}
 	.filter-checkbox input:checked + .pill .indicator {

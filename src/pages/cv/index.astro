@@ -93,10 +93,10 @@ const formatCapacityLabel = (value: string) =>
 				gap: 1.75rem;
 				margin-bottom: 2.5rem;
 				padding: 1.75rem 1.5rem;
-				background: white;
+				background: var(--card-background);
 				border-radius: 20px;
 				border: 1px solid rgba(var(--gray), 0.12);
-				box-shadow: 0 18px 40px rgba(var(--gray), 0.14);
+				box-shadow: var(--box-shadow);
 			}
 			.filters-header {
 				display: flex;
@@ -150,11 +150,11 @@ const formatCapacityLabel = (value: string) =>
 				border: 1px solid rgba(var(--gray), 0.2);
 				font-size: 1rem;
 				font-family: inherit;
-				background: #fff;
+				background: var(--card-background);
 				transition: border-color 0.2s ease, box-shadow 0.2s ease;
 			}
 			.filters-select select:hover {
-				border-color: color-mix(in srgb, var(--accent) 45%, #fff 55%);
+				border-color: color-mix(in srgb, var(--accent) 45%, var(--card-background) 55%);
 			}
 			.filters-select select:focus-visible {
 				border-color: var(--accent);
@@ -188,7 +188,7 @@ const formatCapacityLabel = (value: string) =>
 			.tech-options-toggle:hover {
 				color: var(--accent);
 				border-color: color-mix(in srgb, var(--accent) 45%, rgba(var(--gray), 0.3));
-				background: color-mix(in srgb, var(--accent) 10%, #fff 90%);
+				background: color-mix(in srgb, var(--accent) 10%, var(--card-background) 90%);
 			}
 			.tech-options-toggle:focus-visible {
 				outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
@@ -213,7 +213,7 @@ const formatCapacityLabel = (value: string) =>
 			.tags li {
 				padding: 0.25rem 0.75rem;
 				border-radius: 999px;
-				background: rgba(var(--gray-light), 0.7);
+				background: var(--tag-background);
 				font-size: 0.85rem;
 				color: rgb(var(--gray-dark));
 			}
