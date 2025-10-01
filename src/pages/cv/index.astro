@@ -1,0 +1,504 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import FilterCheckbox from '../../components/FilterCheckbox.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { getTechDisplayName } from '../../data/tech';
+import type { AssignableTechSlug } from '../../data/tech';
+
+const experiences = (await getCollection('cv'))
+	.filter((entry) => !entry.data.draft)
+	.sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf());
+
+const techUsageCounts = new Map<AssignableTechSlug, number>();
+
+for (const experience of experiences) {
+	const uniqueTech = new Set(experience.data.tech);
+	for (const tech of uniqueTech) {
+		const currentCount = techUsageCounts.get(tech) ?? 0;
+		techUsageCounts.set(tech, currentCount + 1);
+	}
+}
+
+const formatProjects = (count: number) => {
+	const suffix = count === 1 ? 'project' : 'projects';
+	return `${count} ${suffix}`;
+};
+
+const techFilters = Array.from(techUsageCounts.entries())
+	.map(([tech, count]) => ({
+		tech,
+		count,
+		label: `${getTechDisplayName(tech)} (${formatProjects(count)})`,
+	}))
+	.filter((filter) => filter.count > 0)
+	.sort((a, b) => {
+		if (b.count !== a.count) return b.count - a.count;
+		return a.tech.localeCompare(b.tech);
+	});
+
+const TECH_FILTER_LIMIT = 10;
+
+const [featuredExperience, ...restExperiences] = experiences;
+
+const capacityFilters = ['professional', 'hobby'].filter((capacity) =>
+	experiences.some((experience) => (experience.data.capacity ?? 'professional') === capacity),
+);
+
+const formatPeriod = (start: Date, end?: Date | null) => {
+	const formatter = new Intl.DateTimeFormat('en', {
+		year: 'numeric',
+		month: 'short',
+	});
+	const startLabel = formatter.format(start);
+	const endLabel = end ? formatter.format(end) : 'Present';
+	return `${startLabel} – ${endLabel}`;
+};
+
+const formatCapacityLabel = (value: string) =>
+	value === 'hobby' ? 'Hobby projects' : 'Professional engagements';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Experience — ${SITE_TITLE}`}
+			description={`${SITE_DESCRIPTION} · Selected client engagements and projects.`}
+		/>
+		<style>
+			.hero {
+				display: grid;
+				grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+				gap: 2rem;
+				margin-bottom: 3rem;
+				align-items: center;
+			}
+			.hero h1 {
+				margin-bottom: 1rem;
+			}
+			.hero p {
+				margin: 0 0 1rem 0;
+			}
+			.hero-image {
+				border-radius: 16px;
+				overflow: hidden;
+				box-shadow: var(--box-shadow);
+			}
+			.filters {
+				display: grid;
+				gap: 1.75rem;
+				margin-bottom: 2.5rem;
+				padding: 1.75rem 1.5rem;
+				background: white;
+				border-radius: 20px;
+				border: 1px solid rgba(var(--gray), 0.12);
+				box-shadow: 0 18px 40px rgba(var(--gray), 0.14);
+			}
+			.filters-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 1rem;
+			}
+			.filters-header h2 {
+				margin: 0;
+				font-size: 1.1rem;
+				color: rgb(var(--gray-dark));
+			}
+			.filters-reset {
+				padding: 0.45rem 0.9rem;
+				border-radius: 12px;
+				border: 1px solid rgba(var(--gray), 0.25);
+				background: transparent;
+				font-size: 0.85rem;
+				font-weight: 600;
+				color: rgb(var(--gray));
+				cursor: pointer;
+				transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+			}
+			.filters-reset:hover {
+				color: var(--accent);
+				border-color: color-mix(in srgb, var(--accent) 50%, rgba(var(--gray), 0.25));
+			}
+			.filters-reset:focus-visible {
+				outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+				outline-offset: 2px;
+			}
+			.filters-body {
+				display: grid;
+				gap: 1.5rem;
+				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+				align-items: start;
+			}
+			.filters-select {
+				display: flex;
+				flex-direction: column;
+				gap: 0.6rem;
+			}
+			.filters-select span,
+			.filters-select legend {
+				font-weight: 600;
+				color: rgb(var(--gray-dark));
+			}
+			.filters-select select {
+				padding: 0.65rem 0.85rem;
+				border-radius: 12px;
+				border: 1px solid rgba(var(--gray), 0.2);
+				font-size: 1rem;
+				font-family: inherit;
+				background: #fff;
+				transition: border-color 0.2s ease, box-shadow 0.2s ease;
+			}
+			.filters-select select:hover {
+				border-color: color-mix(in srgb, var(--accent) 45%, #fff 55%);
+			}
+			.filters-select select:focus-visible {
+				border-color: var(--accent);
+				box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+				outline: none;
+			}
+			.tech-options {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				max-height: 20rem;
+				overflow-y: auto;
+				padding-right: 0.35rem;
+			}
+			.tech-options[data-expanded='false'] .tech-option--extra {
+				display: none;
+			}
+			.tech-options-toggle {
+				align-self: flex-start;
+				margin-top: 0.5rem;
+				padding: 0.35rem 0.75rem;
+				border-radius: 999px;
+				border: 1px solid rgba(var(--gray), 0.3);
+				background: transparent;
+				font-size: 0.85rem;
+				font-weight: 600;
+				color: rgb(var(--gray));
+				cursor: pointer;
+				transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+			}
+			.tech-options-toggle:hover {
+				color: var(--accent);
+				border-color: color-mix(in srgb, var(--accent) 45%, rgba(var(--gray), 0.3));
+				background: color-mix(in srgb, var(--accent) 10%, #fff 90%);
+			}
+			.tech-options-toggle:focus-visible {
+				outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+				outline-offset: 2px;
+			}
+			.timeline {
+				display: grid;
+				gap: 1.5rem;
+			}
+			.card h2 {
+				margin-bottom: 0.25rem;
+			}
+			.role {
+				margin: 0;
+				color: rgb(var(--gray));
+				font-weight: 600;
+			}
+			.card .summary {
+				margin-top: 0.75rem;
+				margin-bottom: 1rem;
+			}
+			.tags li {
+				padding: 0.25rem 0.75rem;
+				border-radius: 999px;
+				background: rgba(var(--gray-light), 0.7);
+				font-size: 0.85rem;
+				color: rgb(var(--gray-dark));
+			}
+			.empty-state {
+				margin-top: 2rem;
+				padding: 1.5rem;
+				border-radius: 16px;
+				background: rgba(var(--gray-light), 0.4);
+				text-align: center;
+				font-weight: 600;
+				color: rgb(var(--gray));
+			}
+			@media (max-width: 960px) {
+				.hero {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main class="page-shell">
+			{featuredExperience && (
+				<section
+					class="hero"
+					data-entry="featured"
+					data-capacity={featuredExperience.data.capacity ?? 'professional'}
+					data-tech={featuredExperience.data.tech.join('|')}
+				>
+					<div>
+						<h1>{featuredExperience.data.title}</h1>
+						<p class="meta">
+							{featuredExperience.data.customer && (
+								<span>{featuredExperience.data.customer}</span>
+							)}
+							{featuredExperience.data.customer && ' · '}
+							{formatPeriod(featuredExperience.data.startDate, featuredExperience.data.endDate)}
+						</p>
+						<p class="role">
+							{featuredExperience.data.role}
+							{featuredExperience.data.employer && ` · ${featuredExperience.data.employer}`}
+						</p>
+						{featuredExperience.data.location && (
+							<p class="meta location">{featuredExperience.data.location}</p>
+						)}
+						<p class="meta">
+							{featuredExperience.data.capacity === 'hobby'
+								? 'Hobby project'
+								: 'Professional engagement'}
+						</p>
+						<p>{featuredExperience.data.summary}</p>
+						{featuredExperience.data.tech.length > 0 && (
+							<ul class="tags">
+								{featuredExperience.data.tech.map((tag) => (
+									<li>{getTechDisplayName(tag)}</li>
+								))}
+							</ul>
+						)}
+					</div>
+					{featuredExperience.data.heroImage && (
+						<div class="hero-image">
+							<Image
+								width={960}
+								height={540}
+								src={featuredExperience.data.heroImage}
+								alt={featuredExperience.data.title}
+							/>
+						</div>
+					)}
+				</section>
+			)}
+
+			{(capacityFilters.length > 0 || techFilters.length > 0) && (
+				<form class="filters" id="experience-filters">
+					<header class="filters-header">
+						<h2>Filter engagements</h2>
+						<button type="reset" class="filters-reset">Clear filters</button>
+					</header>
+					<div class="filters-body">
+						<label class="filters-select">
+							<span>Capacity</span>
+							<select name="capacity">
+								<option value="all">All capacities</option>
+								{capacityFilters.map((capacity) => (
+									<option value={capacity}>{formatCapacityLabel(capacity)}</option>
+								))}
+							</select>
+						</label>
+						{techFilters.length > 0 && (
+							<fieldset class="filters-select filters-select--tech">
+								<legend>Tech</legend>
+								<div class="tech-options" data-role="tech-options" data-expanded="false">
+									{techFilters.map((filter, index) => (
+										<FilterCheckbox
+											name="tech"
+											value={filter.tech}
+											label={filter.label}
+											class={index >= TECH_FILTER_LIMIT ? 'tech-filter tech-option--extra' : 'tech-filter'}
+										/>
+									))}
+								</div>
+								{techFilters.length > TECH_FILTER_LIMIT && (
+									<button
+										type="button"
+										class="tech-options-toggle"
+										data-role="tech-toggle"
+										aria-expanded="false"
+									>
+										Show {techFilters.length - TECH_FILTER_LIMIT} more
+									</button>
+								)}
+							</fieldset>
+						)}
+					</div>
+				</form>
+			)}
+
+			{restExperiences.length > 0 && (
+				<section class="timeline" aria-label="Professional experience" data-role="experience-list">
+					{restExperiences.map((experience) => (
+						<article
+							class="card"
+							data-entry="experience"
+							data-capacity={experience.data.capacity ?? 'professional'}
+							data-tech={experience.data.tech.join('|')}
+						>
+							<a class="card-link" href={`/cv/${experience.id}/`}>
+								<h2>{experience.data.title}</h2>
+								<p class="meta">
+									{experience.data.customer && <span>{experience.data.customer}</span>}
+									{experience.data.customer && ' · '}
+									{formatPeriod(experience.data.startDate, experience.data.endDate)}
+								</p>
+								<p class="role">
+									{experience.data.role}
+									{experience.data.employer && ` · ${experience.data.employer}`}
+								</p>
+								{experience.data.location && (
+									<p class="meta location">{experience.data.location}</p>
+								)}
+								<p class="meta">
+									{experience.data.capacity === 'hobby'
+										? 'Hobby project'
+										: 'Professional engagement'}
+								</p>
+								<p class="summary">{experience.data.summary}</p>
+								{experience.data.tech.length > 0 && (
+									<ul class="tags">
+										{experience.data.tech.map((tag) => (
+											<li>{getTechDisplayName(tag)}</li>
+										))}
+									</ul>
+								)}
+							</a>
+						</article>
+					))}
+				</section>
+			)}
+
+			<p class="empty-state" data-role="experience-empty" hidden={experiences.length > 0}>No engagements found. Adjust your filters and try again.</p>
+		</main>
+		<Footer />
+
+		{(capacityFilters.length > 0 || techFilters.length > 0) && (
+			<script type="module">
+				const form = document.querySelector('#experience-filters');
+				if (form) {
+					const hero = document.querySelector('[data-entry="featured"]');
+					const experiences = Array.from(document.querySelectorAll('[data-entry="experience"]'));
+					const listSection = document.querySelector('[data-role="experience-list"]');
+					const emptyState = document.querySelector('[data-role="experience-empty"]');
+					const techOptionsContainer = form.querySelector('[data-role="tech-options"]');
+					const techToggleButton = form.querySelector('[data-role="tech-toggle"]');
+
+					const getExtraTechOptions = () =>
+						techOptionsContainer
+							? Array.from(techOptionsContainer.querySelectorAll('.tech-option--extra'))
+							: [];
+
+					const updateTechToggleLabel = () => {
+						if (!techToggleButton || !techOptionsContainer) return;
+						const totalExtra = getExtraTechOptions().length;
+						techToggleButton.hidden = totalExtra === 0;
+						if (totalExtra === 0) return;
+						const expanded = techOptionsContainer.dataset.expanded === 'true';
+						techToggleButton.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+						techToggleButton.textContent = expanded ? 'Show fewer' : `Show ${totalExtra} more`;
+					};
+
+					const setTechExpandedState = (expanded) => {
+						if (!techOptionsContainer) return;
+						techOptionsContainer.dataset.expanded = expanded ? 'true' : 'false';
+						getExtraTechOptions().forEach((option) => {
+							option.hidden = !expanded;
+						});
+						updateTechToggleLabel();
+					};
+
+					const ensureSelectedTechVisible = () => {
+						if (!techOptionsContainer) return;
+						if (techOptionsContainer.dataset.expanded === 'true') return;
+						const hasChecked = getExtraTechOptions().some((option) =>
+							option.querySelector('input[name="tech"]')?.checked,
+						);
+						if (hasChecked) {
+							setTechExpandedState(true);
+						}
+					};
+
+					const parseTech = (value) => (value ? value.split('|').filter(Boolean) : []);
+
+					const matches = (element) => {
+						if (!element) return false;
+						const capacitySelect = form.elements.namedItem('capacity');
+						const capacityValue = capacitySelect?.value ?? 'all';
+						const selectedTech = Array.from(
+							form.querySelectorAll('input[name="tech"]:checked'),
+						).map((input) => input.value);
+
+						const entryCapacity = element.dataset.capacity || 'professional';
+						if (capacityValue !== 'all' && entryCapacity !== capacityValue) {
+							return false;
+						}
+
+						if (selectedTech.length === 0) {
+							return true;
+						}
+
+						const entryTech = parseTech(element.dataset.tech || '');
+						return selectedTech.every((tech) => entryTech.includes(tech));
+					};
+
+					const update = () => {
+						const heroVisible = hero ? matches(hero) : false;
+						if (hero) {
+							hero.hidden = !heroVisible;
+						}
+
+						let visibleCount = heroVisible ? 1 : 0;
+
+						experiences.forEach((experience) => {
+							const visible = matches(experience);
+							experience.hidden = !visible;
+							if (visible) visibleCount += 1;
+						});
+
+						if (listSection) {
+							const hasVisibleExperiences = experiences.some((experience) => !experience.hidden);
+							listSection.hidden = experiences.length > 0 && !hasVisibleExperiences;
+						}
+
+						if (emptyState) {
+							emptyState.hidden = visibleCount > 0;
+						}
+
+						ensureSelectedTechVisible();
+						updateTechToggleLabel();
+					};
+
+					form.addEventListener('input', update);
+					form.addEventListener('change', update);
+					form.addEventListener('reset', () => {
+						requestAnimationFrame(() => {
+							setTechExpandedState(false);
+							update();
+						});
+					});
+
+					if (techToggleButton && techOptionsContainer) {
+						setTechExpandedState(false);
+						ensureSelectedTechVisible();
+						techToggleButton.addEventListener('click', () => {
+							const expanded = techOptionsContainer.dataset.expanded === 'true';
+							setTechExpandedState(!expanded);
+							if (expanded) {
+								ensureSelectedTechVisible();
+							}
+						});
+					} else {
+						updateTechToggleLabel();
+					}
+
+					update();
+				}
+			</script>
+		)}
+	</body>
+</html>

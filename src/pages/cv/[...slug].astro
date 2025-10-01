@@ -1,0 +1,21 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import CvEntry from '../../layouts/CvEntry.astro';
+
+export async function getStaticPaths() {
+	const entries = await getCollection('cv');
+	return entries.map((entry) => ({
+		params: { slug: entry.id },
+		props: entry,
+	}));
+}
+type Props = CollectionEntry<'cv'>;
+
+const entry = Astro.props;
+const { Content } = await render(entry);
+---
+
+
+<CvEntry {...entry.data}>
+	<Content />
+</CvEntry>
