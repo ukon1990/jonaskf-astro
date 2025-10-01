@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import FilterCheckbox from '../../components/FilterCheckbox.astro';
 import Footer from '../../components/Footer.astro';
@@ -9,24 +9,26 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 import { getTechDisplayName } from '../../data/tech';
 import type { AssignableTechSlug } from '../../data/tech';
 
-const experiences = (await getCollection('cv'))
+type CvEntry = CollectionEntry<'cv'>;
+
+const allExperiences: CvEntry[] = (await getCollection('cv'))
 	.filter((entry) => !entry.data.draft)
 	.sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf());
 
-const professionalExperiences = experiences.filter(
+const professionalExperiences = allExperiences.filter(
 	(experience) => (experience.data.capacity ?? 'professional') !== 'hobby',
 );
 
-const highlightExperiences = professionalExperiences.slice(0, 2);
-const highlightExperienceIds = new Set(highlightExperiences.map((experience) => experience.id));
+const highlightedExperiences: CvEntry[] = professionalExperiences.slice(0, 2);
+const highlightedExperienceIds = new Set(highlightedExperiences.map((experience) => experience.id));
 
-const restExperiences = experiences.filter(
-	(experience) => !highlightExperienceIds.has(experience.id),
+const remainingExperiences: CvEntry[] = allExperiences.filter(
+	(experience) => !highlightedExperienceIds.has(experience.id),
 );
 
 const techUsageCounts = new Map<AssignableTechSlug, number>();
 
-for (const experience of experiences) {
+for (const experience of allExperiences) {
 	const uniqueTech = new Set(experience.data.tech);
 	for (const tech of uniqueTech) {
 		const currentCount = techUsageCounts.get(tech) ?? 0;
@@ -53,8 +55,11 @@ const techFilters = Array.from(techUsageCounts.entries())
 
 const TECH_FILTER_LIMIT = 10;
 
+const HIGHLIGHT_MESSAGE_WITH_ENTRIES = 'Recent professional highlights first, followed by every engagement.';
+const HIGHLIGHT_MESSAGE_EMPTY = 'All engagements listed chronologically.';
+
 const capacityFilters = ['professional', 'hobby'].filter((capacity) =>
-	experiences.some((experience) => (experience.data.capacity ?? 'professional') === capacity),
+	allExperiences.some((experience) => (experience.data.capacity ?? 'professional') === capacity),
 );
 
 const formatPeriod = (start: Date, end?: Date | null) => {
@@ -69,6 +74,11 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 
 const formatCapacityLabel = (value: string) =>
 	value === 'hobby' ? 'Hobby projects' : 'Professional engagements';
+
+const highlightIntro =
+	highlightedExperiences.length > 0
+		? HIGHLIGHT_MESSAGE_WITH_ENTRIES
+		: HIGHLIGHT_MESSAGE_EMPTY;
 ---
 
 <!doctype html>
@@ -256,18 +266,21 @@ const formatCapacityLabel = (value: string) =>
 	<body>
 		<Header />
 		<main class="page-shell">
-			<section class="hero" aria-label="Experience overview">
+			<section class="hero" aria-label="Experience overview" data-role="highlight-section">
 				<header class="hero-header">
 					<h1>Experience</h1>
-					{highlightExperiences.length > 0 ? (
-						<p class="meta">Recent professional highlights first, followed by every engagement.</p>
-					) : (
-						<p class="meta">All engagements listed chronologically.</p>
-					)}
+					<p
+						class="meta"
+						data-role="highlight-message"
+						data-with-highlights={HIGHLIGHT_MESSAGE_WITH_ENTRIES}
+						data-without-highlights={HIGHLIGHT_MESSAGE_EMPTY}
+					>
+						{highlightIntro}
+					</p>
 				</header>
-				{highlightExperiences.length > 0 && (
-					<div class="hero-grid">
-						{highlightExperiences.map((experience) => (
+				{highlightedExperiences.length > 0 && (
+					<div class="hero-grid" data-role="highlight-list">
+						{highlightedExperiences.map((experience) => (
 							<article
 								class="card card--featured"
 								data-entry="featured"
@@ -363,9 +376,9 @@ const formatCapacityLabel = (value: string) =>
 				</form>
 			)}
 
-			{restExperiences.length > 0 && (
+			{remainingExperiences.length > 0 && (
 				<section class="timeline" aria-label="All engagements" data-role="experience-list">
-					{restExperiences.map((experience) => (
+					{remainingExperiences.map((experience) => (
 						<article
 							class="card"
 							data-entry="experience"
@@ -405,132 +418,169 @@ const formatCapacityLabel = (value: string) =>
 				</section>
 			)}
 
-			<p class="empty-state" data-role="experience-empty" hidden={experiences.length > 0}>No engagements found. Adjust your filters and try again.</p>
+			<p class="empty-state" data-role="experience-empty" hidden={allExperiences.length > 0}>No engagements found. Adjust your filters and try again.</p>
 		</main>
 		<Footer />
 
 		{(capacityFilters.length > 0 || techFilters.length > 0) && (
 			<script type="module">
 				const form = document.querySelector('#experience-filters');
-				if (form) {
-					const featuredEntries = Array.from(document.querySelectorAll("[data-entry='featured']"));
-					const experiences = Array.from(document.querySelectorAll("[data-entry='experience']"));
-					const listSection = document.querySelector("[data-role='experience-list']");
-					const emptyState = document.querySelector("[data-role='experience-empty']");
-					const techOptionsContainer = form.querySelector("[data-role='tech-options']");
-					const techToggleButton = form.querySelector("[data-role='tech-toggle']");
+				if (!form) {
+					return;
+				}
 
-					const getExtraTechOptions = () =>
-						techOptionsContainer
-							? Array.from(techOptionsContainer.querySelectorAll('.tech-option--extra'))
-							: [];
+				const dom = {
+					highlightSection: document.querySelector("[data-role='highlight-section']"),
+					highlightList: document.querySelector("[data-role='highlight-list']"),
+					highlightMessage: document.querySelector("[data-role='highlight-message']"),
+					featuredEntries: Array.from(document.querySelectorAll("[data-entry='featured']")),
+					experienceEntries: Array.from(document.querySelectorAll("[data-entry='experience']")),
+					listSection: document.querySelector("[data-role='experience-list']"),
+					emptyState: document.querySelector("[data-role='experience-empty']"),
+					techOptions: form.querySelector("[data-role='tech-options']"),
+					techToggle: form.querySelector("[data-role='tech-toggle']"),
+				};
 
-					const updateTechToggleLabel = () => {
-						if (!techToggleButton || !techOptionsContainer) return;
-						const totalExtra = getExtraTechOptions().length;
-						techToggleButton.hidden = totalExtra === 0;
-						if (totalExtra === 0) return;
-						const expanded = techOptionsContainer.dataset.expanded === 'true';
-						techToggleButton.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-						techToggleButton.textContent = expanded ? 'Show fewer' : `Show ${totalExtra} more`;
-					};
+				const getExtraTechOptions = () =>
+					dom.techOptions ? Array.from(dom.techOptions.querySelectorAll('.tech-option--extra')) : [];
 
-					const setTechExpandedState = (expanded) => {
-						if (!techOptionsContainer) return;
-						techOptionsContainer.dataset.expanded = expanded ? 'true' : 'false';
-						getExtraTechOptions().forEach((option) => {
-							option.hidden = !expanded;
-						});
-						updateTechToggleLabel();
-					};
+				const updateTechToggleLabel = () => {
+					if (!dom.techToggle || !dom.techOptions) return;
+					const totalExtra = getExtraTechOptions().length;
+					dom.techToggle.hidden = totalExtra === 0;
+					if (totalExtra === 0) return;
+					const expanded = dom.techOptions.dataset.expanded === 'true';
+					dom.techToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+					dom.techToggle.textContent = expanded ? 'Show fewer' : `Show ${totalExtra} more`;
+				};
 
-					const ensureSelectedTechVisible = () => {
-						if (!techOptionsContainer) return;
-						if (techOptionsContainer.dataset.expanded === 'true') return;
-						const hasChecked = getExtraTechOptions().some((option) =>
-							option.querySelector("input[name='tech']")?.checked,
-						);
-						if (hasChecked) {
-							setTechExpandedState(true);
-						}
-					};
-
-					const parseTech = (value) => (value ? value.split('|').filter(Boolean) : []);
-
-					const matches = (element) => {
-						if (!element) return false;
-						const capacitySelect = form.elements.namedItem('capacity');
-						const capacityValue = capacitySelect?.value ?? 'all';
-						const selectedTech = Array.from(
-							form.querySelectorAll("input[name='tech']:checked"),
-						).map((input) => input.value);
-
-						const entryCapacity = element.dataset.capacity || 'professional';
-						if (capacityValue !== 'all' && entryCapacity !== capacityValue) {
-							return false;
-						}
-
-						if (selectedTech.length === 0) {
-							return true;
-						}
-
-						const entryTech = parseTech(element.dataset.tech || '');
-						return selectedTech.every((tech) => entryTech.includes(tech));
-					};
-
-					const update = () => {
-						let visibleCount = 0;
-
-						featuredEntries.forEach((entry) => {
-							const visible = matches(entry);
-							entry.hidden = !visible;
-							if (visible) visibleCount += 1;
-						});
-
-						experiences.forEach((experience) => {
-							const visible = matches(experience);
-							experience.hidden = !visible;
-							if (visible) visibleCount += 1;
-						});
-
-						if (listSection) {
-							const hasVisibleExperiences = experiences.some((experience) => !experience.hidden);
-							listSection.hidden = experiences.length > 0 && !hasVisibleExperiences;
-						}
-
-						if (emptyState) {
-							emptyState.hidden = visibleCount > 0;
-						}
-
-						ensureSelectedTechVisible();
-						updateTechToggleLabel();
-					};
-
-					form.addEventListener('input', update);
-					form.addEventListener('change', update);
-					form.addEventListener('reset', () => {
-						requestAnimationFrame(() => {
-							setTechExpandedState(false);
-							update();
-						});
+				const setTechExpandedState = (expanded) => {
+					if (!dom.techOptions) return;
+					dom.techOptions.dataset.expanded = expanded ? 'true' : 'false';
+					getExtraTechOptions().forEach((option) => {
+						option.hidden = !expanded;
 					});
+					updateTechToggleLabel();
+				};
 
-					if (techToggleButton && techOptionsContainer) {
-						setTechExpandedState(false);
-						ensureSelectedTechVisible();
-						techToggleButton.addEventListener('click', () => {
-							const expanded = techOptionsContainer.dataset.expanded === 'true';
-							setTechExpandedState(!expanded);
-							if (expanded) {
-								ensureSelectedTechVisible();
-							}
-						});
-					} else {
-						updateTechToggleLabel();
+				const ensureSelectedTechVisible = () => {
+					if (!dom.techOptions || dom.techOptions.dataset.expanded === 'true') return;
+					const hasChecked = getExtraTechOptions().some((option) =>
+						option.querySelector("input[name='tech']")?.checked,
+					);
+					if (hasChecked) {
+						setTechExpandedState(true);
+					}
+				};
+
+				const parseTech = (value) => (value ? value.split('|').filter(Boolean) : []);
+
+				const readFormState = () => {
+					const capacity = form.elements.namedItem('capacity')?.value ?? 'all';
+					const tech = Array.from(form.querySelectorAll("input[name='tech']:checked"), (input) => input.value);
+					return { capacity, tech };
+				};
+
+				const matches = (element, state) => {
+					if (!element) return false;
+					const entryCapacity = element.dataset.capacity || 'professional';
+					if (state.capacity !== 'all' && entryCapacity !== state.capacity) {
+						return false;
 					}
 
-					update();
+					if (state.tech.length === 0) {
+						return true;
+					}
+
+					const entryTech = parseTech(element.dataset.tech || '');
+					return state.tech.every((tech) => entryTech.includes(tech));
+				};
+
+				const updateHighlightVisibility = (state) => {
+					let visibleHighlights = 0;
+					dom.featuredEntries.forEach((entry) => {
+						const visible = matches(entry, state);
+						entry.hidden = !visible;
+						if (visible) visibleHighlights += 1;
+					});
+
+					if (dom.highlightList) {
+						dom.highlightList.hidden = visibleHighlights === 0;
+					}
+
+					if (dom.highlightSection) {
+						dom.highlightSection.dataset.hasHighlights = visibleHighlights > 0 ? 'true' : 'false';
+					}
+
+					if (dom.highlightMessage) {
+						const message =
+							visibleHighlights > 0
+								? dom.highlightMessage.dataset.withHighlights
+								: dom.highlightMessage.dataset.withoutHighlights;
+						if (message) {
+							dom.highlightMessage.textContent = message;
+						}
+					}
+
+					return visibleHighlights;
+				};
+
+				const updateExperienceVisibility = (state) => {
+					let visibleExperiences = 0;
+					dom.experienceEntries.forEach((entry) => {
+						const visible = matches(entry, state);
+						entry.hidden = !visible;
+						if (visible) visibleExperiences += 1;
+					});
+					return visibleExperiences;
+				};
+
+				const updateListSectionVisibility = () => {
+					if (!dom.listSection) return;
+					const hasVisibleExperiences = dom.experienceEntries.some((entry) => !entry.hidden);
+					dom.listSection.hidden = dom.experienceEntries.length > 0 && !hasVisibleExperiences;
+				};
+
+				const updateEmptyState = (visibleCount) => {
+					if (!dom.emptyState) return;
+					dom.emptyState.hidden = visibleCount > 0;
+				};
+
+				const update = () => {
+					const state = readFormState();
+					let visibleCount = 0;
+					visibleCount += updateHighlightVisibility(state);
+					visibleCount += updateExperienceVisibility(state);
+					updateListSectionVisibility();
+					updateEmptyState(visibleCount);
+					ensureSelectedTechVisible();
+					updateTechToggleLabel();
+				};
+
+				form.addEventListener('input', update);
+				form.addEventListener('change', update);
+				form.addEventListener('reset', () => {
+					requestAnimationFrame(() => {
+						setTechExpandedState(false);
+						update();
+					});
+				});
+
+				if (dom.techToggle && dom.techOptions) {
+					setTechExpandedState(false);
+					ensureSelectedTechVisible();
+					dom.techToggle.addEventListener('click', () => {
+						const expanded = dom.techOptions.dataset.expanded === 'true';
+						setTechExpandedState(!expanded);
+						if (expanded) {
+							ensureSelectedTechVisible();
+						}
+					});
+				} else {
+					updateTechToggleLabel();
 				}
+
+				update();
 			</script>
 		)}
 	</body>
