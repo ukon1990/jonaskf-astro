@@ -381,12 +381,12 @@ const formatCapacityLabel = (value: string) =>
 			<script type="module">
 				const form = document.querySelector('#experience-filters');
 				if (form) {
-					const hero = document.querySelector('[data-entry="featured"]');
-					const experiences = Array.from(document.querySelectorAll('[data-entry="experience"]'));
-					const listSection = document.querySelector('[data-role="experience-list"]');
-					const emptyState = document.querySelector('[data-role="experience-empty"]');
-					const techOptionsContainer = form.querySelector('[data-role="tech-options"]');
-					const techToggleButton = form.querySelector('[data-role="tech-toggle"]');
+					const hero = document.querySelector("[data-entry='featured']");
+					const experiences = Array.from(document.querySelectorAll("[data-entry='experience']"));
+					const listSection = document.querySelector("[data-role='experience-list']");
+					const emptyState = document.querySelector("[data-role='experience-empty']");
+					const techOptionsContainer = form.querySelector("[data-role='tech-options']");
+					const techToggleButton = form.querySelector("[data-role='tech-toggle']");
 
 					const getExtraTechOptions = () =>
 						techOptionsContainer
@@ -416,7 +416,7 @@ const formatCapacityLabel = (value: string) =>
 						if (!techOptionsContainer) return;
 						if (techOptionsContainer.dataset.expanded === 'true') return;
 						const hasChecked = getExtraTechOptions().some((option) =>
-							option.querySelector('input[name="tech"]')?.checked,
+							option.querySelector("input[name='tech']")?.checked,
 						);
 						if (hasChecked) {
 							setTechExpandedState(true);
@@ -430,7 +430,7 @@ const formatCapacityLabel = (value: string) =>
 						const capacitySelect = form.elements.namedItem('capacity');
 						const capacityValue = capacitySelect?.value ?? 'all';
 						const selectedTech = Array.from(
-							form.querySelectorAll('input[name="tech"]:checked'),
+							form.querySelectorAll("input[name='tech']:checked"),
 						).map((input) => input.value);
 
 						const entryCapacity = element.dataset.capacity || 'professional';
