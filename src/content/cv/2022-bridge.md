@@ -15,6 +15,7 @@ tech:
   - mongodb
   - jest
   - kotlin
+  - typescript
   - docker
   - kubernetes
   - react

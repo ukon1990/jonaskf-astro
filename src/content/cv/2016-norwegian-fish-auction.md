@@ -11,6 +11,7 @@ summary: 'I built a scalable, server‑less auction platform on AWS, concentrati
 tech:
   - angular
   - java
+  - typescript
   - junit
   - mockito
   - spring-boot

@@ -15,7 +15,6 @@ tech:
   - angular-material
   - angular-pwa
   - typescript
-  - javascript
   - indexeddb
   - dynamodb
   - aws-lambda

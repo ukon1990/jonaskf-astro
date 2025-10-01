@@ -13,6 +13,7 @@ tech:
   - protractor
   - bootstrap
   - angular-material
+  - typescript
   - adobe-xd
   - google-analytics
 ---
