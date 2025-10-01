@@ -1,11 +1,11 @@
 ---
-title: "WoW Auction Helper"
-role: "Full-stack Developer"
-employer: "Personal Project"
-capacity: "hobby"
-link: "https://github.com/ukon1990/wow-auction-helper"
-startDate: "2015-01-01"
-endDate: "2023-04-01"
+title: 'WoW Auction Helper'
+role: 'Full-stack Developer'
+employer: 'Personal Project'
+capacity: 'hobby'
+sourceLink: 'https://github.com/ukon1990/wow-auction-helper'
+startDate: '2015-01-01'
+endDate: '2023-04-01'
 summary: >
   Built a serverless Angular PWA that turns World of Warcraft auction-house data into actionable insights, helping
   players spot profitable crafts, monitor auctions, import TSM addon data, and build custom dashboards while keeping
@@ -24,6 +24,7 @@ tech:
   - nodejs
   - serverless-framework
   - git
+  - logrocket
 ---
 
 ### Motivation
@@ -50,19 +51,16 @@ World of Warcraft auction-house data into quick, actionable decisions. The goal 
 ### Architecture
 
 - **Client-side** –
-
   - Angular (v15+) + Angular Material for UI.
   - Angular PWA with service workers for automatic background updates.
   - IndexedDB (via dexie) for an offline-first local cache of items, recipes, and auction data.
 
 - **Server-side** –
-
   - AWS Lambda functions (written in TypeScript) orchestrated by the Serverless framework.
   - Optional AWS AppSync layer for user settings and real-time subscriptions.
   - SQL (MariaDB/MySQL) for persistent storage; most data lives in the client's IndexedDB.
 
 - **Hosting** –
-
   - Static front-end served from S3 with CloudFront CDN.
   - API endpoints and background jobs deployed as Lambda functions.
 

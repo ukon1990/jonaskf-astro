@@ -1,17 +1,17 @@
 ---
-title: 'Personal homepage with Astro'
-role: 'Fullstack developer'
-employer: 'Personal project'
-capacity: 'hobby'
-summary: 'Run a focused Astro homepage that showcases client work, ongoing side projects, and the experiments that tie them together.'
-startDate: '2025-10-01'
-location: 'Remote'
+title: "Personal homepage with Astro"
+role: "Fullstack developer"
+employer: "Personal project"
+capacity: "hobby"
+summary: "Run a focused Astro homepage that showcases client work, ongoing side projects, and the experiments that tie them together."
+startDate: "2025-10-01"
+location: "Remote"
 tech:
   - astro
   - typescript
   - nodejs
   - github-actions
-link: 'https://github.com/ukon1990/jonaskf-astro'
+sourceLink: "https://github.com/ukon1990/jonaskf-astro"
 ---
 
 ### Mission

@@ -3,7 +3,7 @@ title: "Lang"
 role: "Full-stack Developer"
 employer: "Personal Project"
 capacity: "hobby"
-link: "https://github.com/ukon1990/lang"
+sourceLink: "https://github.com/ukon1990/lang"
 startDate: "2020-01-01"
 draft: true
 summary: >

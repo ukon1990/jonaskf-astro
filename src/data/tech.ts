@@ -76,6 +76,7 @@ export const techCatalog = defineTechCatalog({
     parent: "react",
   },
   scss: { label: "SCSS", category: "language", parent: "frontend" },
+  slim: { label: "Slim", category: "language", parent: "frontend" },
   wordpress: { label: "WordPress", category: "framework", parent: "frontend" },
   android: { label: "Android", category: "platform", parent: "mobile" },
 

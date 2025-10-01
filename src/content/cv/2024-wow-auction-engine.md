@@ -3,7 +3,7 @@ title: "WoW Auction Engine"
 role: "Backend Developer"
 employer: "Personal Project"
 capacity: "hobby"
-link: "https://github.com/ukon1990/wow-auction-engine"
+sourceLink: "https://github.com/ukon1990/wow-auction-engine"
 startDate: "2024-01-01"
 draft: true
 summary: >

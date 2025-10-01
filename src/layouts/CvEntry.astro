@@ -29,6 +29,7 @@ const {
 	tech,
 	heroImage,
 	link,
+	sourceLink,
 } = Astro.props;
 
 type GroupedTechEntry = {
@@ -317,6 +318,11 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 					{link && (
 						<p class="link">
 							<a href={link} target="_blank" rel="noreferrer">Visit project ↗</a>
+						</p>
+					)}
+					{sourceLink && (
+						<p class="link">
+							<a href={sourceLink} target="_blank" rel="noreferrer">View source on GitHub ↗</a>
 						</p>
 					)}
 					{groupedTech.length > 0 && (

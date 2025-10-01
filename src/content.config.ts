@@ -40,6 +40,7 @@ const cv = defineCollection({
       tech: z.array(techEnum).default([]),
       heroImage: image().optional(),
       link: z.string().url().optional(),
+      sourceLink: z.string().url().optional(),
     }),
 });
 
