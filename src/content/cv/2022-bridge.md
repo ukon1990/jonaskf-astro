@@ -1,10 +1,11 @@
 ---
-title: "Bridge & Bridge Transport - Digital Supply-Chain Platform"
-role: "Full-stack Developer"
-employer: "Inmeta"
-customer: "Tradesolution"
-customerUrl: "https://www.tradesolution.no/"
-startDate: "2022-01-01"
+title: 'Bridge & Bridge Transport - Digital Supply-Chain Platform'
+role: 'Full-stack Developer'
+employer: 'Inmeta'
+customer: 'Tradesolution'
+customerUrl: 'https://www.tradesolution.no/'
+link: 'https://tradesolution.no/tjenester/bridge/'
+startDate: '2022-01-01'
 summary: >
   Helped launch Tradesolution's Bridge platform by co-designing the React foundation, building the Bridge Transport
   module, and delivering Kotlin microservices, Azure-hosted CI/CD, and observability that modernised logistics for the

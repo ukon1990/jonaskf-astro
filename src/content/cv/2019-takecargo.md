@@ -1,11 +1,12 @@
 ---
-title: "TakeCargo — Digital Transport Platform"
-role: "Full-stack Developer"
-employer: "Inmeta"
-customer: "Tradesolution"
-customerUrl: "https://www.tradesolution.no/"
-startDate: "2019-12-01"
-endDate: "2022-01-01"
+title: 'TakeCargo — Digital Transport Platform'
+role: 'Full-stack Developer'
+employer: 'Inmeta'
+customer: 'Tradesolution'
+customerUrl: 'https://www.tradesolution.no/'
+link: 'https://tradesolution.no/tjenester/takecargo/'
+startDate: '2019-12-01'
+endDate: '2022-01-01'
 summary: >
   Modernised Tradesolution's TakeCargo logistics platform by rebuilding the React front end, extending Dropwizard and
   Spring Boot microservices, and introducing serverless reporting with Azure Logic Apps to streamline transport data
