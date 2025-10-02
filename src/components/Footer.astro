@@ -3,34 +3,32 @@ const today = new Date();
 ---
 
 <footer>
-	<p>© {today.getFullYear()} Jonas Munthe Flønes. Available for impactful product engineering missions.</p>
-	<ul class="social-links">
-		<li><a href="mailto:hello@jonaskf.dev">Email</a></li>
-		<li><a href="https://github.com/jonaskf" target="_blank" rel="noreferrer">GitHub</a></li>
-		<li><a href="/blog">Blog</a></li>
-	</ul>
+  <p>© {today.getFullYear()} Jonas Munthe Flønes.</p>
+  <ul class="social-links">
+    <li><a href="https://github.com/jonaskf" target="_blank" rel="noreferrer">GitHub</a></li>
+  </ul>
 </footer>
 <style>
-	footer {
-		padding: 2em 1em 6em 1em;
-		background: linear-gradient(var(--gray-gradient)) no-repeat;
-		color: rgb(var(--gray));
-		text-align: center;
-	}
-	.social-links {
-		display: flex;
-		justify-content: center;
-		gap: 1.5em;
-		margin: 1em 0 0 0;
-		padding: 0;
-		list-style: none;
-	}
-	.social-links a {
-		text-decoration: none;
-		color: rgb(var(--gray-dark));
-		font-weight: 600;
-	}
-	.social-links a:hover {
-		color: rgb(var(--accent));
-	}
+  footer {
+    padding: 2em 1em 6em 1em;
+    background: linear-gradient(var(--gray-gradient)) no-repeat;
+    color: rgb(var(--gray));
+    text-align: center;
+  }
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5em;
+    margin: 1em 0 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .social-links a {
+    text-decoration: none;
+    color: rgb(var(--gray-dark));
+    font-weight: 600;
+  }
+  .social-links a:hover {
+    color: rgb(var(--accent));
+  }
 </style>
