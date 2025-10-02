@@ -10,190 +10,190 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getTechDisplayName } from '../data/tech';
 
 const experiences = (await getCollection('cv'))
-	.filter((entry) => !entry.data.draft)
-	.sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf())
-	.slice(0, 3);
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf())
+  .slice(0, 3);
 
 const posts = (await getCollection('blog'))
-	.filter((entry) => !entry.data.draft)
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 3);
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
 
 const formatPeriod = (start: Date, end?: Date | null) => {
-	const formatter = new Intl.DateTimeFormat('en', {
-		year: 'numeric',
-		month: 'short',
-	});
-	const startLabel = formatter.format(start);
-	const endLabel = end ? formatter.format(end) : 'Present';
-	return `${startLabel} – ${endLabel}`;
+  const formatter = new Intl.DateTimeFormat('en', {
+    year: 'numeric',
+    month: 'short',
+  });
+  const startLabel = formatter.format(start);
+  const endLabel = end ? formatter.format(end) : 'Present';
+  return `${startLabel} – ${endLabel}`;
 };
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			.hero {
-				display: grid;
-				grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-				gap: 2rem;
-				align-items: center;
-			}
-			.hero h1 {
-				margin-bottom: 1rem;
-			}
-			.hero p {
-				margin: 0 0 1rem 0;
-			}
-			.hero-image {
-				justify-self: end;
-				border-radius: 16px;
-				overflow: hidden;
-				max-width: 280px;
-				box-shadow: var(--box-shadow);
-			}
-			.contact {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 1rem 2rem;
-				margin: 0;
-				padding: 0;
-				list-style: none;
-			}
-			.contact a {
-				font-weight: 600;
-			}
-			.section-header {
-				display: flex;
-				align-items: baseline;
-				justify-content: space-between;
-				gap: 1rem;
-			}
-			.section-header a {
-				font-size: 0.95rem;
-				font-weight: 600;
-			}
-			.experience-list,
-			.post-list {
-				display: grid;
-				gap: 1.5rem;
-				margin: 0;
-				padding: 0;
-				list-style: none;
-			}
-			.card h3 {
-				margin-bottom: 0.35rem;
-			}
-			.summary {
-				margin-top: 0.75rem;
-				margin-bottom: 0;
-			}
-			.tags {
-				margin: 1rem 0 0 0;
-			}
-			@media (max-width: 960px) {
-				.hero {
-					grid-template-columns: 1fr;
-				}
-				.hero-image {
-					justify-self: center;
-				}
-				.section-header {
-					flex-direction: column;
-					align-items: flex-start;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main class="page-shell page-grid page-grid--xl">
-			<section class="hero">
-				<div>
-					<h1>Hej, I'm Jonas Munthe Flønes</h1>
-					<p>
-						I help teams deliver resilient services and thoughtful developer experiences. My focus is
-						on backend architecture, platform enablement, and coaching engineers to ship with
-						confidence.
-					</p>
-					<p>
-						I split my time between leading delivery, pairing with engineers, and writing about lessons
-						learned from projects in logistics, telecom, and e-commerce.
-					</p>
-					<ul class="contact">
-						<li><a href="mailto:hello@jonaskf.dev">hello@jonaskf.dev</a></li>
-						<li><a href="https://github.com/jonaskf" target="_blank" rel="noreferrer">github.com/jonaskf</a></li>
-						<li><a href="/cv">View full experience</a></li>
-						<li><a href="/about">How I work</a></li>
-					</ul>
-				</div>
-				<div class="hero-image">
-					<Image src={portrait} width={360} height={360} alt="Portrait" />
-				</div>
-			</section>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <style>
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+        gap: 2rem;
+        align-items: center;
+      }
+      .hero h1 {
+        margin-bottom: 1rem;
+      }
+      .hero p {
+        margin: 0 0 1rem 0;
+      }
+      .hero-image {
+        justify-self: end;
+        border-radius: 16px;
+        overflow: hidden;
+        max-width: 280px;
+        box-shadow: var(--box-shadow);
+      }
+      .contact {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 2rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .contact a {
+        font-weight: 600;
+      }
+      .section-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .section-header a {
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+      .experience-list,
+      .post-list {
+        display: grid;
+        gap: 1.5rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .card h3 {
+        margin-bottom: 0.35rem;
+      }
+      .summary {
+        margin-top: 0.75rem;
+        margin-bottom: 0;
+      }
+      .tags {
+        margin: 1rem 0 0 0;
+      }
+      @media (max-width: 960px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+        .hero-image {
+          justify-self: center;
+        }
+        .section-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <Header />
+    <main class="page-shell page-grid page-grid--xl">
+      <section class="hero">
+        <div>
+          <h1>Hey, I'm Jonas Munthe Flønes</h1>
+          <p>todo</p>
+          <p>todo</p>
+          <ul class="contact">
+            <li>
+              <a href="https://github.com/jonaskf" target="_blank" rel="noreferrer"
+                >github.com/jonaskf</a
+              >
+            </li>
+            <li><a href="/cv">View full experience</a></li>
+            <li><a href="/about">How I work</a></li>
+          </ul>
+        </div>
+        <div class="hero-image">
+          <Image src={portrait} width={360} height={360} alt="Portrait" />
+        </div>
+      </section>
 
-			<section>
-				<div class="section-header">
-					<h2>Experience highlights</h2>
-					<a href="/cv">See every engagement →</a>
-				</div>
-					<ul class="experience-list">
-						{experiences.map((experience) => (
-							<li class="card">
-								<a class="card-link" href={`/cv/${experience.id}/`}>
-									<h3>{experience.data.title}</h3>
-									<p class="meta">
-										{experience.data.customer && <span>{experience.data.customer}</span>}
-										{experience.data.customer && ' · '}
-										{formatPeriod(experience.data.startDate, experience.data.endDate)}
-									</p>
-									<p class="meta">
-										{experience.data.role}
-										{experience.data.employer && ` · ${experience.data.employer}`}
-									</p>
-									<p class="meta">
-										{experience.data.capacity === 'hobby'
-											? 'Hobby project'
-											: 'Professional engagement'}
-									</p>
-									<p class="summary">{experience.data.summary}</p>
-									{experience.data.tech.length > 0 && (
-										<ul class="tags">
-										{experience.data.tech.slice(0, 4).map((tag) => (
-											<li>{getTechDisplayName(tag)}</li>
-										))}
-									</ul>
-								)}
-							</a>
-						</li>
-					))}
-				</ul>
-			</section>
+      <section>
+        <div class="section-header">
+          <h2>Experience highlights</h2>
+          <a href="/cv">See every engagement →</a>
+        </div>
+        <ul class="experience-list">
+          {
+            experiences.map((experience) => (
+              <li class="card">
+                <a class="card-link" href={`/cv/${experience.id}/`}>
+                  <h3>{experience.data.title}</h3>
+                  <p class="meta">
+                    {experience.data.customer && <span>{experience.data.customer}</span>}
+                    {experience.data.customer && ' · '}
+                    {formatPeriod(experience.data.startDate, experience.data.endDate)}
+                  </p>
+                  <p class="meta">
+                    {experience.data.role}
+                    {experience.data.employer && ` · ${experience.data.employer}`}
+                  </p>
+                  <p class="meta">
+                    {experience.data.capacity === 'hobby'
+                      ? 'Hobby project'
+                      : 'Professional engagement'}
+                  </p>
+                  <p class="summary">{experience.data.summary}</p>
+                  {experience.data.tech.length > 0 && (
+                    <ul class="tags">
+                      {experience.data.tech.slice(0, 4).map((tag) => (
+                        <li>{getTechDisplayName(tag)}</li>
+                      ))}
+                    </ul>
+                  )}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
 
-			{posts.length > 0 && (
-				<section>
-					<div class="section-header">
-						<h2>Latest writing</h2>
-						<a href="/blog">Browse the blog →</a>
-					</div>
-					<ul class="post-list">
-						{posts.map((post) => (
-							<li class="card">
-								<a class="card-link" href={`/blog/${post.id}/`}>
-									<p class="meta">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-									<h3>{post.data.title}</h3>
-									<p class="summary">{post.data.description}</p>
-								</a>
-							</li>
-						))}
-					</ul>
-				</section>
-			)}
-		</main>
-		<Footer />
-	</body>
+      {
+        posts.length > 0 && (
+          <section>
+            <div class="section-header">
+              <h2>Latest writing</h2>
+              <a href="/blog">Browse the blog →</a>
+            </div>
+            <ul class="post-list">
+              {posts.map((post) => (
+                <li class="card">
+                  <a class="card-link" href={`/blog/${post.id}/`}>
+                    <p class="meta">
+                      <FormattedDate date={post.data.pubDate} />
+                    </p>
+                    <h3>{post.data.title}</h3>
+                    <p class="summary">{post.data.description}</p>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </main>
+    <Footer />
+  </body>
 </html>
