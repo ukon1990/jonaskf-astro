@@ -5,7 +5,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import portrait from '../assets/blog-placeholder-about.jpg';
+import portrait from '../assets/headshot.jpeg';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getTechDisplayName } from '../data/tech';
 
@@ -47,12 +47,22 @@ const formatPeriod = (start: Date, end?: Date | null) => {
       .hero p {
         margin: 0 0 1rem 0;
       }
-      .hero-image {
+      .hero__content {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .hero__figure {
         justify-self: end;
         border-radius: 16px;
         overflow: hidden;
         max-width: 280px;
         box-shadow: var(--box-shadow);
+      }
+      .hero__figure :global(img) {
+        display: block;
+        width: 100%;
+        height: auto;
       }
       .contact {
         display: flex;
@@ -97,7 +107,7 @@ const formatPeriod = (start: Date, end?: Date | null) => {
         .hero {
           grid-template-columns: 1fr;
         }
-        .hero-image {
+        .hero__figure {
           justify-self: center;
         }
         .section-header {
@@ -110,24 +120,38 @@ const formatPeriod = (start: Date, end?: Date | null) => {
   <body>
     <Header />
     <main class="page-shell page-grid page-grid--xl">
-      <section class="hero">
-        <div>
-          <h1>Hey, I'm Jonas Munthe Flønes</h1>
-          <p>todo</p>
-          <p>todo</p>
+      <section class="hero" aria-labelledby="home-intro">
+        <article class="hero__content">
+          <h1 id="home-intro">Hey, I'm Jonas Munthe Flønes.</h1>
+          <p>
+            I am a full-stack developer with a bachelor’s degree in Information Systems,
+            specializing in web development from the University College of Østfold. My main focus is
+            on building modern web applications — from rich, interactive front ends in Angular or
+            React to robust back-end services with Spring Boot in Kotlin or AWS Lambda with
+            Node.js/TypeScript.
+          </p>
+          <p>
+            I enjoy optimizing systems and creating the best possible experience for users.
+            Problem-solving is one of the main reasons I love this field, and I thrive when
+            collaborating with others to find smart, practical solutions.
+          </p>
+          <p>
+            Outside of work, I often spend time on hobby projects, but I also enjoy relaxing with
+            video games or a good movie.
+          </p>
           <ul class="contact">
             <li>
-              <a href="https://github.com/jonaskf" target="_blank" rel="noreferrer"
-                >github.com/jonaskf</a
+              <a href="https://github.com/ukon1990" target="_blank" rel="noreferrer">
+                github.com/ukon1990</a
               >
             </li>
             <li><a href="/cv">View full experience</a></li>
             <li><a href="/about">How I work</a></li>
           </ul>
-        </div>
-        <div class="hero-image">
+        </article>
+        <figure class="hero__figure">
           <Image src={portrait} width={360} height={360} alt="Portrait" />
-        </div>
+        </figure>
       </section>
 
       <section>
