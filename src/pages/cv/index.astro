@@ -6,8 +6,8 @@ import CvExperienceFilters from '../../components/CvExperienceFilters.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
-import { getTechDisplayName } from '../../data/tech';
-import type { AssignableTechSlug } from '../../data/tech';
+import { getTechDisplayName, getTechMeta, getTechAncestors } from '../../data/tech';
+import type { AssignableTechSlug, TechSlug } from '../../data/tech';
 
 type CvEntry = CollectionEntry<'cv'>;
 
@@ -41,19 +41,89 @@ const formatProjects = (count: number) => {
 	return `${count} ${suffix}`;
 };
 
-const techFilters = Array.from(techUsageCounts.entries())
-	.map(([tech, count]) => ({
-		tech,
-		count,
-		label: `${getTechDisplayName(tech)} (${formatProjects(count)})`,
-	}))
+type TechFilterOption = {
+    tech: AssignableTechSlug;
+    count: number;
+    label: string;
+};
+
+type TechFilterGroup = {
+    id: string;
+    label: string;
+    projectCount: number;
+    projectLabel: string;
+    options: TechFilterOption[];
+};
+
+const getPrimaryGroupSlug = (slug: AssignableTechSlug): string => {
+    const ancestors = getTechAncestors(slug);
+    for (const ancestor of ancestors) {
+        const meta = getTechMeta(ancestor);
+        if (meta?.category === 'group') {
+            return ancestor;
+        }
+    }
+    const meta = getTechMeta(slug);
+    if (meta?.category === 'group') {
+        return slug;
+    }
+    return 'other';
+};
+
+const describeGroup = (groupId: string) => {
+	if (groupId === 'other') {
+		return { id: groupId, label: 'Other' };
+	}
+	const meta = getTechMeta(groupId as TechSlug);
+	return { id: groupId, label: meta?.label ?? 'Other' };
+};
+
+const techFilterOptions: Array<TechFilterOption & { groupId: string; groupLabel: string }> = Array.from(
+	techUsageCounts.entries(),
+)
+	.map(([tech, count]) => {
+		const groupId = getPrimaryGroupSlug(tech);
+		const groupLabel = describeGroup(groupId).label;
+		return {
+			tech,
+			count,
+			label: `${getTechDisplayName(tech)} (${formatProjects(count)})`,
+			groupId,
+			groupLabel,
+		};
+	})
 	.filter((filter) => filter.count > 0)
 	.sort((a, b) => {
+		if (a.groupLabel !== b.groupLabel) return a.groupLabel.localeCompare(b.groupLabel);
 		if (b.count !== a.count) return b.count - a.count;
 		return a.tech.localeCompare(b.tech);
 	});
 
-const TECH_FILTER_LIMIT = 10;
+const techGroupsRaw = Array.from(
+	techFilterOptions.reduce((map, option) => {
+		const existing = map.get(option.groupId);
+		if (existing) {
+			existing.options.push(option);
+			existing.projectCount += option.count;
+		} else {
+			map.set(option.groupId, {
+				id: option.groupId,
+				label: option.groupLabel,
+				projectCount: option.count,
+				projectLabel: '',
+				options: [option],
+			});
+		}
+		return map;
+	}, new Map<string, TechFilterGroup>()).values(),
+);
+
+const techFilterGroups: TechFilterGroup[] = techGroupsRaw
+	.map((group) => ({
+		...group,
+		projectLabel: formatProjects(group.projectCount),
+	}))
+	.sort((a, b) => a.label.localeCompare(b.label));
 
 const HIGHLIGHT_MESSAGE_WITH_ENTRIES = 'Recent professional highlights first, followed by every engagement.';
 const HIGHLIGHT_MESSAGE_EMPTY = 'All engagements listed chronologically.';
@@ -187,38 +257,51 @@ const highlightIntro =
 				box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
 				outline: none;
 			}
+			.tech-accordion {
+				display: grid;
+				gap: 0.75rem;
+			}
+			.tech-group {
+				border: 1px solid rgba(var(--gray), 0.12);
+				border-radius: 16px;
+				background: var(--card-background);
+				transition: border-color 0.2s ease, box-shadow 0.2s ease;
+			}
+			.tech-group[open] {
+				border-color: color-mix(in srgb, var(--accent) 35%, rgba(var(--gray), 0.12));
+				box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 16%, transparent);
+			}
+			.tech-group summary {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 0.75rem;
+				padding: 0.85rem 1rem;
+				cursor: pointer;
+				font-weight: 600;
+				color: rgb(var(--gray-dark));
+				list-style: none;
+			}
+			.tech-group summary::-webkit-details-marker {
+				display: none;
+			}
+			.tech-group summary:focus-visible {
+				outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+				outline-offset: 2px;
+			}
+			.tech-group-title {
+				flex: 1;
+			}
+			.tech-group-count {
+				font-size: 0.85rem;
+				color: rgb(var(--gray));
+				font-weight: 500;
+			}
 			.tech-options {
 				display: flex;
 				flex-wrap: wrap;
 				gap: 0.75rem;
-				max-height: 20rem;
-				overflow-y: auto;
-				padding-right: 0.35rem;
-			}
-			.tech-options[data-expanded='false'] .tech-option--extra {
-				display: none;
-			}
-			.tech-options-toggle {
-				align-self: flex-start;
-				margin-top: 0.5rem;
-				padding: 0.35rem 0.75rem;
-				border-radius: 999px;
-				border: 1px solid rgba(var(--gray), 0.3);
-				background: transparent;
-				font-size: 0.85rem;
-				font-weight: 600;
-				color: rgb(var(--gray));
-				cursor: pointer;
-				transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-			}
-			.tech-options-toggle:hover {
-				color: var(--accent);
-				border-color: color-mix(in srgb, var(--accent) 45%, rgba(var(--gray), 0.3));
-				background: color-mix(in srgb, var(--accent) 10%, var(--card-background) 90%);
-			}
-			.tech-options-toggle:focus-visible {
-				outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
-				outline-offset: 2px;
+				padding: 0 1rem 1rem;
 			}
 			.timeline {
 				display: grid;
@@ -278,8 +361,7 @@ const highlightIntro =
 
 			<CvExperienceFilters
 				capacityOptions={capacityOptions}
-				techFilters={techFilters}
-				techFilterLimit={TECH_FILTER_LIMIT}
+				techFilterGroups={techFilterGroups}
 			/>
 
 			{highlightedExperiences.length > 0 && (
@@ -317,8 +399,7 @@ const highlightIntro =
 					experienceEntries: Array.from(document.querySelectorAll("[data-entry='experience']")),
 					listSection: document.querySelector("[data-role='experience-list']"),
 					emptyState: document.querySelector("[data-role='experience-empty']"),
-					techOptions: form.querySelector("[data-role='tech-options']"),
-					techToggle: form.querySelector("[data-role='tech-toggle']"),
+					techGroups: Array.from(form.querySelectorAll("[data-role='tech-group']")),
 				};
 
 				const highlightMessages = {
@@ -327,36 +408,14 @@ const highlightIntro =
 						dom.highlightMessage?.dataset.withoutHighlights || dom.highlightMessage?.textContent || '',
 				};
 
-				const getExtraTechOptions = () =>
-					dom.techOptions ? Array.from(dom.techOptions.querySelectorAll('.tech-option--extra')) : [];
-
-				const updateTechToggleLabel = () => {
-					if (!dom.techToggle || !dom.techOptions) return;
-					const totalExtra = getExtraTechOptions().length;
-					dom.techToggle.hidden = totalExtra === 0;
-					if (totalExtra === 0) return;
-					const expanded = dom.techOptions.dataset.expanded === 'true';
-					dom.techToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-					dom.techToggle.textContent = expanded ? 'Show fewer' : `Show ${totalExtra} more`;
-				};
-
-				const setTechExpandedState = (expanded) => {
-					if (!dom.techOptions) return;
-					dom.techOptions.dataset.expanded = expanded ? 'true' : 'false';
-					getExtraTechOptions().forEach((option) => {
-						option.hidden = !expanded;
+				const ensureSelectedGroupsOpen = () => {
+					dom.techGroups.forEach((group) => {
+						if (group.hasAttribute('open')) return;
+						const hasChecked = group.querySelector("input[name='tech']:checked");
+						if (hasChecked) {
+							group.setAttribute('open', '');
+						}
 					});
-					updateTechToggleLabel();
-				};
-
-				const ensureSelectedTechVisible = () => {
-					if (!dom.techOptions || dom.techOptions.dataset.expanded === 'true') return;
-					const hasChecked = getExtraTechOptions().some((option) =>
-						option.querySelector("input[name='tech']")?.checked,
-					);
-					if (hasChecked) {
-						setTechExpandedState(true);
-					}
 				};
 
 				const parseTech = (value) => (value ? value.split('|').filter(Boolean) : []);
@@ -384,13 +443,20 @@ const highlightIntro =
 					return state.tech.every((tech) => entryTech.includes(tech));
 				};
 
-				const updateHighlightVisibility = (state) => {
-					let visibleHighlights = 0;
-					dom.featuredEntries.forEach((entry) => {
+				const filterEntries = (entries, state) => {
+					let visibleCount = 0;
+					entries.forEach((entry) => {
 						const visible = matches(entry, state);
 						entry.hidden = !visible;
-						if (visible) visibleHighlights += 1;
+						if (visible) visibleCount += 1;
 					});
+					return visibleCount;
+				};
+
+				const update = () => {
+					const state = readFormState();
+					const visibleHighlights = filterEntries(dom.featuredEntries, state);
+					const visibleExperiences = filterEntries(dom.experienceEntries, state);
 
 					if (dom.highlightList) {
 						dom.highlightList.hidden = visibleHighlights === 0;
@@ -409,63 +475,29 @@ const highlightIntro =
 						}
 					}
 
-					return visibleHighlights;
-				};
+					if (dom.listSection) {
+						const hasEntries = dom.experienceEntries.length > 0;
+						dom.listSection.hidden = hasEntries && visibleExperiences === 0;
+					}
 
-				const updateExperienceVisibility = (state) => {
-					let visibleExperiences = 0;
-					dom.experienceEntries.forEach((entry) => {
-						const visible = matches(entry, state);
-						entry.hidden = !visible;
-						if (visible) visibleExperiences += 1;
-					});
-					return visibleExperiences;
-				};
+					if (dom.emptyState) {
+						dom.emptyState.hidden = visibleHighlights + visibleExperiences > 0;
+					}
 
-				const updateListSectionVisibility = () => {
-					if (!dom.listSection) return;
-					const hasVisibleExperiences = dom.experienceEntries.some((entry) => !entry.hidden);
-					dom.listSection.hidden = dom.experienceEntries.length > 0 && !hasVisibleExperiences;
-				};
-
-				const updateEmptyState = (visibleCount) => {
-					if (!dom.emptyState) return;
-					dom.emptyState.hidden = visibleCount > 0;
-				};
-
-				const update = () => {
-					const state = readFormState();
-					let visibleCount = 0;
-					visibleCount += updateHighlightVisibility(state);
-					visibleCount += updateExperienceVisibility(state);
-					updateListSectionVisibility();
-					updateEmptyState(visibleCount);
-					ensureSelectedTechVisible();
-					updateTechToggleLabel();
+					ensureSelectedGroupsOpen();
 				};
 
 				form.addEventListener('input', update);
 				form.addEventListener('change', update);
 				form.addEventListener('reset', () => {
 					requestAnimationFrame(() => {
-						setTechExpandedState(false);
+						dom.techGroups.forEach((group) => {
+							const defaultOpen = group.dataset.defaultOpen === 'true';
+							group.toggleAttribute('open', defaultOpen);
+						});
 						update();
 					});
 				});
-
-				if (dom.techToggle && dom.techOptions) {
-					setTechExpandedState(false);
-					ensureSelectedTechVisible();
-					dom.techToggle.addEventListener('click', () => {
-						const expanded = dom.techOptions.dataset.expanded === 'true';
-						setTechExpandedState(!expanded);
-						if (expanded) {
-							ensureSelectedTechVisible();
-						}
-					});
-				} else {
-					updateTechToggleLabel();
-				}
 
 				update();
 			</script>

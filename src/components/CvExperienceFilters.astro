@@ -13,15 +13,21 @@ interface TechFilterOption {
 	count: number;
 }
 
-interface Props {
-	capacityOptions: CapacityOption[];
-	techFilters: TechFilterOption[];
-	techFilterLimit: number;
+interface TechFilterGroup {
+	id: string;
+	label: string;
+	projectLabel: string;
+	options: TechFilterOption[];
 }
 
-const { capacityOptions, techFilters, techFilterLimit } = Astro.props;
+interface Props {
+	capacityOptions: CapacityOption[];
+	techFilterGroups: TechFilterGroup[];
+}
+
+const { capacityOptions, techFilterGroups } = Astro.props;
 const hasCapacityFilter = capacityOptions.length > 0;
-const hasTechFilter = techFilters.length > 0;
+const hasTechFilter = techFilterGroups.length > 0;
 ---
 
 {(hasCapacityFilter || hasTechFilter) && (
@@ -45,26 +51,32 @@ const hasTechFilter = techFilters.length > 0;
 			{hasTechFilter && (
 				<fieldset class="filters-select filters-select--tech">
 					<legend>Tech</legend>
-					<div class="tech-options" data-role="tech-options" data-expanded="false">
-						{techFilters.map((filter, index) => (
-							<FilterCheckbox
-								name="tech"
-								value={filter.tech}
-								label={filter.label}
-								class={index >= techFilterLimit ? 'tech-filter tech-option--extra' : 'tech-filter'}
-							/>
+					<div class="tech-accordion">
+						{techFilterGroups.map((group, index) => (
+							<details
+								class="tech-group"
+								data-role="tech-group"
+								data-group={group.id}
+								data-default-open={index === 0 ? 'true' : 'false'}
+								open={index === 0}
+							>
+								<summary>
+									<span class="tech-group-title">{group.label}</span>
+									<span class="tech-group-count">{group.projectLabel}</span>
+								</summary>
+								<div class="tech-options">
+									{group.options.map((filter) => (
+										<FilterCheckbox
+											name="tech"
+											value={filter.tech}
+											label={filter.label}
+											class="tech-filter"
+										/>
+									))}
+								</div>
+							</details>
 						))}
 					</div>
-					{techFilters.length > techFilterLimit && (
-						<button
-							type="button"
-							class="tech-options-toggle"
-							data-role="tech-toggle"
-							aria-expanded="false"
-						>
-							Show {techFilters.length - techFilterLimit} more
-						</button>
-					)}
 				</fieldset>
 			)}
 		</div>
