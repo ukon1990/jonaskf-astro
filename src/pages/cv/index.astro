@@ -42,17 +42,11 @@ const formatProjects = (count: number) => {
 };
 
 type TechFilterOption = {
-    tech: AssignableTechSlug;
-    count: number;
-    label: string;
-};
-
-type TechFilterGroup = {
-    id: string;
-    label: string;
-    projectCount: number;
-    projectLabel: string;
-    options: TechFilterOption[];
+	tech: AssignableTechSlug;
+	count: number;
+	label: string;
+	groupId: string;
+	groupLabel: string;
 };
 
 const getPrimaryGroupSlug = (slug: AssignableTechSlug): string => {
@@ -78,9 +72,7 @@ const describeGroup = (groupId: string) => {
 	return { id: groupId, label: meta?.label ?? 'Other' };
 };
 
-const techFilterOptions: Array<TechFilterOption & { groupId: string; groupLabel: string }> = Array.from(
-	techUsageCounts.entries(),
-)
+const techFilters: TechFilterOption[] = Array.from(techUsageCounts.entries())
 	.map(([tech, count]) => {
 		const groupId = getPrimaryGroupSlug(tech);
 		const groupLabel = describeGroup(groupId).label;
@@ -98,32 +90,6 @@ const techFilterOptions: Array<TechFilterOption & { groupId: string; groupLabel:
 		if (b.count !== a.count) return b.count - a.count;
 		return a.tech.localeCompare(b.tech);
 	});
-
-const techGroupsRaw = Array.from(
-	techFilterOptions.reduce((map, option) => {
-		const existing = map.get(option.groupId);
-		if (existing) {
-			existing.options.push(option);
-			existing.projectCount += option.count;
-		} else {
-			map.set(option.groupId, {
-				id: option.groupId,
-				label: option.groupLabel,
-				projectCount: option.count,
-				projectLabel: '',
-				options: [option],
-			});
-		}
-		return map;
-	}, new Map<string, TechFilterGroup>()).values(),
-);
-
-const techFilterGroups: TechFilterGroup[] = techGroupsRaw
-	.map((group) => ({
-		...group,
-		projectLabel: formatProjects(group.projectCount),
-	}))
-	.sort((a, b) => a.label.localeCompare(b.label));
 
 const HIGHLIGHT_MESSAGE_WITH_ENTRIES = 'Recent professional highlights first, followed by every engagement.';
 const HIGHLIGHT_MESSAGE_EMPTY = 'All engagements listed chronologically.';
@@ -361,7 +327,7 @@ const highlightIntro =
 
 			<CvExperienceFilters
 				capacityOptions={capacityOptions}
-				techFilterGroups={techFilterGroups}
+				techFilters={techFilters}
 			/>
 
 			{highlightedExperiences.length > 0 && (
@@ -384,7 +350,7 @@ const highlightIntro =
 		</main>
 		<Footer />
 
-		{(capacityFilters.length > 0 || techFilters.length > 0) && (
+			{(capacityFilters.length > 0 || techFilters.length > 0) && (
 			<script type="module">
 				const form = document.querySelector('#experience-filters');
 				if (!form) {

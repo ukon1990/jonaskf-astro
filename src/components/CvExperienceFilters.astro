@@ -11,21 +11,51 @@ interface TechFilterOption {
 	tech: AssignableTechSlug;
 	label: string;
 	count: number;
+	groupId: string;
+	groupLabel: string;
 }
 
 interface TechFilterGroup {
 	id: string;
 	label: string;
-	projectLabel: string;
+	techCount: number;
+	techCountLabel: string;
 	options: TechFilterOption[];
 }
 
 interface Props {
 	capacityOptions: CapacityOption[];
-	techFilterGroups: TechFilterGroup[];
+	techFilters: TechFilterOption[];
 }
 
-const { capacityOptions, techFilterGroups } = Astro.props;
+const { capacityOptions, techFilters } = Astro.props;
+
+const formatTechnologyCount = (count: number) =>
+	`${count} ${count === 1 ? 'technology' : 'technologies'}`;
+
+const buildTechGroups = (filters: TechFilterOption[]): TechFilterGroup[] => {
+	const groups = new Map<string, TechFilterGroup>();
+	for (const filter of filters) {
+		const existing = groups.get(filter.groupId);
+		if (existing) {
+			existing.options.push(filter);
+			existing.techCount += 1;
+			existing.techCountLabel = formatTechnologyCount(existing.techCount);
+			continue;
+		}
+		groups.set(filter.groupId, {
+			id: filter.groupId,
+			label: filter.groupLabel,
+			techCount: 1,
+			techCountLabel: formatTechnologyCount(1),
+			options: [filter],
+		});
+	}
+	return Array.from(groups.values()).sort((a, b) => a.label.localeCompare(b.label));
+};
+
+const techFilterGroups = buildTechGroups(techFilters);
+
 const hasCapacityFilter = capacityOptions.length > 0;
 const hasTechFilter = techFilterGroups.length > 0;
 ---
@@ -60,9 +90,9 @@ const hasTechFilter = techFilterGroups.length > 0;
 								data-default-open={index === 0 ? 'true' : 'false'}
 								open={index === 0}
 							>
-								<summary>
-									<span class="tech-group-title">{group.label}</span>
-									<span class="tech-group-count">{group.projectLabel}</span>
+									<summary>
+										<span class="tech-group-title">{group.label}</span>
+										<span class="tech-group-count">{group.techCountLabel}</span>
 								</summary>
 								<div class="tech-options">
 									{group.options.map((filter) => (
