@@ -1,12 +1,12 @@
 ---
+import SocialLinks from './SocialLinks.astro';
+
 const today = new Date();
 ---
 
 <footer>
   <p>© {today.getFullYear()} Jonas Munthe Flønes.</p>
-  <ul class="social-links">
-    <li><a href="https://github.com/jonaskf" target="_blank" rel="noreferrer">GitHub</a></li>
-  </ul>
+  <SocialLinks class="footer-social-links" />
 </footer>
 <style>
   footer {
@@ -15,20 +15,9 @@ const today = new Date();
     color: rgb(var(--gray));
     text-align: center;
   }
-  .social-links {
-    display: flex;
+  .footer-social-links {
     justify-content: center;
-    gap: 1.5em;
+    gap: 1.4em;
     margin: 1em 0 0 0;
-    padding: 0;
-    list-style: none;
-  }
-  .social-links a {
-    text-decoration: none;
-    color: rgb(var(--gray-dark));
-    font-weight: 600;
-  }
-  .social-links a:hover {
-    color: rgb(var(--accent));
   }
 </style>
