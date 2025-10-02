@@ -1,0 +1,72 @@
+---
+import FilterCheckbox from './FilterCheckbox.astro';
+import type { AssignableTechSlug } from '../data/tech';
+
+interface CapacityOption {
+	value: string;
+	label: string;
+}
+
+interface TechFilterOption {
+	tech: AssignableTechSlug;
+	label: string;
+	count: number;
+}
+
+interface Props {
+	capacityOptions: CapacityOption[];
+	techFilters: TechFilterOption[];
+	techFilterLimit: number;
+}
+
+const { capacityOptions, techFilters, techFilterLimit } = Astro.props;
+const hasCapacityFilter = capacityOptions.length > 0;
+const hasTechFilter = techFilters.length > 0;
+---
+
+{(hasCapacityFilter || hasTechFilter) && (
+	<form class="filters" id="experience-filters">
+		<header class="filters-header">
+			<h2>Filter engagements</h2>
+			<button type="reset" class="filters-reset">Clear filters</button>
+		</header>
+		<div class="filters-body">
+			{hasCapacityFilter && (
+				<label class="filters-select">
+					<span>Capacity</span>
+					<select name="capacity">
+						<option value="all">All capacities</option>
+						{capacityOptions.map((option) => (
+							<option value={option.value}>{option.label}</option>
+						))}
+					</select>
+				</label>
+			)}
+			{hasTechFilter && (
+				<fieldset class="filters-select filters-select--tech">
+					<legend>Tech</legend>
+					<div class="tech-options" data-role="tech-options" data-expanded="false">
+						{techFilters.map((filter, index) => (
+							<FilterCheckbox
+								name="tech"
+								value={filter.tech}
+								label={filter.label}
+								class={index >= techFilterLimit ? 'tech-filter tech-option--extra' : 'tech-filter'}
+							/>
+						))}
+					</div>
+					{techFilters.length > techFilterLimit && (
+						<button
+							type="button"
+							class="tech-options-toggle"
+							data-role="tech-toggle"
+							aria-expanded="false"
+						>
+							Show {techFilters.length - techFilterLimit} more
+						</button>
+					)}
+				</fieldset>
+			)}
+		</div>
+	</form>
+)}

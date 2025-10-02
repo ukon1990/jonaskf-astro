@@ -1,8 +1,8 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
-import FilterCheckbox from '../../components/FilterCheckbox.astro';
+import CvExperienceCard from '../../components/CvExperienceCard.astro';
+import CvExperienceFilters from '../../components/CvExperienceFilters.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
@@ -62,18 +62,14 @@ const capacityFilters = ['professional', 'hobby'].filter((capacity) =>
 	allExperiences.some((experience) => (experience.data.capacity ?? 'professional') === capacity),
 );
 
-const formatPeriod = (start: Date, end?: Date | null) => {
-	const formatter = new Intl.DateTimeFormat('en', {
-		year: 'numeric',
-		month: 'short',
-	});
-	const startLabel = formatter.format(start);
-	const endLabel = end ? formatter.format(end) : 'Present';
-	return `${startLabel} – ${endLabel}`;
-};
+function formatCapacityLabel(value: string) {
+	return value === 'hobby' ? 'Hobby projects' : 'Professional engagements';
+}
 
-const formatCapacityLabel = (value: string) =>
-	value === 'hobby' ? 'Hobby projects' : 'Professional engagements';
+const capacityOptions = capacityFilters.map((capacity) => ({
+	value: capacity,
+	label: formatCapacityLabel(capacity),
+}));
 
 const highlightIntro =
 	highlightedExperiences.length > 0
@@ -278,142 +274,26 @@ const highlightIntro =
 						{highlightIntro}
 					</p>
 				</header>
-				{highlightedExperiences.length > 0 && (
-					<div class="hero-grid" data-role="highlight-list">
-						{highlightedExperiences.map((experience) => (
-							<article
-								class="card card--featured"
-								data-entry="featured"
-								data-capacity={experience.data.capacity ?? 'professional'}
-								data-tech={experience.data.tech.join('|')}
-							>
-								<a class="card-link" href={`/cv/${experience.id}/`}>
-									{experience.data.heroImage && (
-										<div class="card-hero-image">
-											<Image
-												width={960}
-												height={540}
-												src={experience.data.heroImage}
-												alt={experience.data.title}
-											/>
-										</div>
-									)}
-									<h2>{experience.data.title}</h2>
-									<p class="meta">
-										{experience.data.customer && <span>{experience.data.customer}</span>}
-										{experience.data.customer && ' · '}
-										{formatPeriod(experience.data.startDate, experience.data.endDate)}
-									</p>
-									<p class="role">
-										{experience.data.role}
-										{experience.data.employer && ` · ${experience.data.employer}`}
-									</p>
-									{experience.data.location && (
-										<p class="meta location">{experience.data.location}</p>
-									)}
-									<p class="meta">
-										{experience.data.capacity === 'hobby'
-											? 'Hobby project'
-											: 'Professional engagement'}
-									</p>
-									<p class="summary">{experience.data.summary}</p>
-									{experience.data.tech.length > 0 && (
-										<ul class="tags">
-											{experience.data.tech.map((tag) => (
-												<li>{getTechDisplayName(tag)}</li>
-											))}
-										</ul>
-									)}
-								</a>
-							</article>
-						))}
-					</div>
-				)}
 			</section>
 
-			{(capacityFilters.length > 0 || techFilters.length > 0) && (
-				<form class="filters" id="experience-filters">
-					<header class="filters-header">
-						<h2>Filter engagements</h2>
-						<button type="reset" class="filters-reset">Clear filters</button>
-					</header>
-					<div class="filters-body">
-						<label class="filters-select">
-							<span>Capacity</span>
-							<select name="capacity">
-								<option value="all">All capacities</option>
-								{capacityFilters.map((capacity) => (
-									<option value={capacity}>{formatCapacityLabel(capacity)}</option>
-								))}
-							</select>
-						</label>
-						{techFilters.length > 0 && (
-							<fieldset class="filters-select filters-select--tech">
-								<legend>Tech</legend>
-								<div class="tech-options" data-role="tech-options" data-expanded="false">
-									{techFilters.map((filter, index) => (
-										<FilterCheckbox
-											name="tech"
-											value={filter.tech}
-											label={filter.label}
-											class={index >= TECH_FILTER_LIMIT ? 'tech-filter tech-option--extra' : 'tech-filter'}
-										/>
-									))}
-								</div>
-								{techFilters.length > TECH_FILTER_LIMIT && (
-									<button
-										type="button"
-										class="tech-options-toggle"
-										data-role="tech-toggle"
-										aria-expanded="false"
-									>
-										Show {techFilters.length - TECH_FILTER_LIMIT} more
-									</button>
-								)}
-							</fieldset>
-						)}
-					</div>
-				</form>
+			<CvExperienceFilters
+				capacityOptions={capacityOptions}
+				techFilters={techFilters}
+				techFilterLimit={TECH_FILTER_LIMIT}
+			/>
+
+			{highlightedExperiences.length > 0 && (
+				<section class="timeline" aria-label="Most recent professional engagements" data-role="highlight-list">
+					{highlightedExperiences.map((experience) => (
+						<CvExperienceCard experience={experience} variant="highlight" />
+					))}
+				</section>
 			)}
 
 			{remainingExperiences.length > 0 && (
 				<section class="timeline" aria-label="All engagements" data-role="experience-list">
 					{remainingExperiences.map((experience) => (
-						<article
-							class="card"
-							data-entry="experience"
-							data-capacity={experience.data.capacity ?? 'professional'}
-							data-tech={experience.data.tech.join('|')}
-						>
-							<a class="card-link" href={`/cv/${experience.id}/`}>
-								<h2>{experience.data.title}</h2>
-								<p class="meta">
-									{experience.data.customer && <span>{experience.data.customer}</span>}
-									{experience.data.customer && ' · '}
-									{formatPeriod(experience.data.startDate, experience.data.endDate)}
-								</p>
-								<p class="role">
-									{experience.data.role}
-									{experience.data.employer && ` · ${experience.data.employer}`}
-								</p>
-								{experience.data.location && (
-									<p class="meta location">{experience.data.location}</p>
-								)}
-								<p class="meta">
-									{experience.data.capacity === 'hobby'
-										? 'Hobby project'
-										: 'Professional engagement'}
-								</p>
-								<p class="summary">{experience.data.summary}</p>
-								{experience.data.tech.length > 0 && (
-									<ul class="tags">
-										{experience.data.tech.map((tag) => (
-											<li>{getTechDisplayName(tag)}</li>
-										))}
-									</ul>
-								)}
-							</a>
-						</article>
+						<CvExperienceCard experience={experience} variant="list" />
 					))}
 				</section>
 			)}
@@ -439,6 +319,12 @@ const highlightIntro =
 					emptyState: document.querySelector("[data-role='experience-empty']"),
 					techOptions: form.querySelector("[data-role='tech-options']"),
 					techToggle: form.querySelector("[data-role='tech-toggle']"),
+				};
+
+				const highlightMessages = {
+					withHighlights: dom.highlightMessage?.dataset.withHighlights || dom.highlightMessage?.textContent || '',
+					withoutHighlights:
+						dom.highlightMessage?.dataset.withoutHighlights || dom.highlightMessage?.textContent || '',
 				};
 
 				const getExtraTechOptions = () =>
@@ -477,7 +363,9 @@ const highlightIntro =
 
 				const readFormState = () => {
 					const capacity = form.elements.namedItem('capacity')?.value ?? 'all';
-					const tech = Array.from(form.querySelectorAll("input[name='tech']:checked"), (input) => input.value);
+					const tech = Array.from(form.querySelectorAll("input[name='tech']:checked"))
+						.map((input) => (input instanceof HTMLInputElement ? input.value : ''))
+						.filter(Boolean);
 					return { capacity, tech };
 				};
 
@@ -513,10 +401,9 @@ const highlightIntro =
 					}
 
 					if (dom.highlightMessage) {
-						const message =
-							visibleHighlights > 0
-								? dom.highlightMessage.dataset.withHighlights
-								: dom.highlightMessage.dataset.withoutHighlights;
+						const message = visibleHighlights > 0
+							? highlightMessages.withHighlights
+							: highlightMessages.withoutHighlights;
 						if (message) {
 							dom.highlightMessage.textContent = message;
 						}

@@ -1,0 +1,75 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { getTechDisplayName } from '../data/tech';
+
+type CvEntry = CollectionEntry<'cv'>;
+
+interface Props {
+	experience: CvEntry;
+	variant: 'highlight' | 'list';
+}
+
+const { experience, variant } = Astro.props;
+const capacity = experience.data.capacity ?? 'professional';
+const isHighlight = variant === 'highlight';
+const dataEntry = isHighlight ? 'featured' : 'experience';
+const cardClass = isHighlight ? 'card card--featured' : 'card';
+const capacityLabel = capacity === 'hobby' ? 'Hobby project' : 'Professional engagement';
+
+const formatPeriod = (start: Date, end?: Date | null) => {
+	const formatter = new Intl.DateTimeFormat('en', {
+		year: 'numeric',
+		month: 'short',
+	});
+	const startLabel = formatter.format(start);
+	const endLabel = end ? formatter.format(end) : 'Present';
+	return `${startLabel} – ${endLabel}`;
+};
+
+const periodLabel = formatPeriod(experience.data.startDate, experience.data.endDate);
+const techTags = experience.data.tech ?? [];
+const showHeroImage = isHighlight && experience.data.heroImage;
+---
+
+<article
+	class={cardClass}
+	data-entry={dataEntry}
+	data-capacity={capacity}
+	data-tech={techTags.join('|')}
+>
+	<a class="card-link" href={`/cv/${experience.id}/`}>
+		{showHeroImage && (
+			<div class="card-hero-image">
+				<Image
+					width={960}
+					height={540}
+					src={experience.data.heroImage}
+					alt={experience.data.title}
+				/>
+			</div>
+		)}
+		<h2>{experience.data.title}</h2>
+		<p class="meta">
+			{experience.data.customer && <span>{experience.data.customer}</span>}
+			{experience.data.customer && ' · '}
+			{periodLabel}
+		</p>
+		<p class="role">
+			{experience.data.role}
+			{experience.data.employer && ` · ${experience.data.employer}`}
+		</p>
+		{experience.data.location && (
+			<p class="meta location">{experience.data.location}</p>
+		)}
+		<p class="meta">{capacityLabel}</p>
+		<p class="summary">{experience.data.summary}</p>
+		{techTags.length > 0 && (
+			<ul class="tags">
+				{techTags.map((tag) => (
+					<li>{getTechDisplayName(tag)}</li>
+				))}
+			</ul>
+		)}
+	</a>
+</article>
