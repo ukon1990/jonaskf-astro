@@ -314,14 +314,6 @@ const highlightIntro =
 			<section class="hero" aria-label="Experience overview" data-role="highlight-section">
 				<header class="hero-header">
 					<h1>Experience</h1>
-					<p
-						class="meta"
-						data-role="highlight-message"
-						data-with-highlights={HIGHLIGHT_MESSAGE_WITH_ENTRIES}
-						data-without-highlights={HIGHLIGHT_MESSAGE_EMPTY}
-					>
-						{highlightIntro}
-					</p>
 				</header>
 			</section>
 
@@ -331,11 +323,21 @@ const highlightIntro =
 			/>
 
 			{highlightedExperiences.length > 0 && (
-				<section class="timeline" aria-label="Most recent professional engagements" data-role="highlight-list">
-					{highlightedExperiences.map((experience) => (
-						<CvExperienceCard experience={experience} variant="highlight" />
-					))}
-				</section>
+				<div>
+					<p
+						class="meta"
+						data-role="highlight-message"
+						data-with-highlights={HIGHLIGHT_MESSAGE_WITH_ENTRIES}
+						data-without-highlights={HIGHLIGHT_MESSAGE_EMPTY}
+					>
+						{highlightIntro}
+					</p>
+					<section class="timeline" aria-label="Most recent professional engagements" data-role="highlight-list">
+						{highlightedExperiences.map((experience) => (
+							<CvExperienceCard experience={experience} variant="highlight" />
+						))}
+					</section>
+				</div>
 			)}
 
 			{remainingExperiences.length > 0 && (
@@ -352,120 +354,124 @@ const highlightIntro =
 
 			{(capacityFilters.length > 0 || techFilters.length > 0) && (
 			<script type="module">
-				const form = document.querySelector('#experience-filters');
-				if (!form) {
-					return;
-				}
-
-				const dom = {
-					highlightSection: document.querySelector("[data-role='highlight-section']"),
-					highlightList: document.querySelector("[data-role='highlight-list']"),
-					highlightMessage: document.querySelector("[data-role='highlight-message']"),
-					featuredEntries: Array.from(document.querySelectorAll("[data-entry='featured']")),
-					experienceEntries: Array.from(document.querySelectorAll("[data-entry='experience']")),
-					listSection: document.querySelector("[data-role='experience-list']"),
-					emptyState: document.querySelector("[data-role='experience-empty']"),
-					techGroups: Array.from(form.querySelectorAll("[data-role='tech-group']")),
-				};
-
-				const highlightMessages = {
-					withHighlights: dom.highlightMessage?.dataset.withHighlights || dom.highlightMessage?.textContent || '',
-					withoutHighlights:
-						dom.highlightMessage?.dataset.withoutHighlights || dom.highlightMessage?.textContent || '',
-				};
-
-				const ensureSelectedGroupsOpen = () => {
-					dom.techGroups.forEach((group) => {
-						if (group.hasAttribute('open')) return;
-						const hasChecked = group.querySelector("input[name='tech']:checked");
-						if (hasChecked) {
-							group.setAttribute('open', '');
-						}
-					});
-				};
-
-				const parseTech = (value) => (value ? value.split('|').filter(Boolean) : []);
-
-				const readFormState = () => {
-					const capacity = form.elements.namedItem('capacity')?.value ?? 'all';
-					const tech = Array.from(form.querySelectorAll("input[name='tech']:checked"))
-						.map((input) => (input instanceof HTMLInputElement ? input.value : ''))
-						.filter(Boolean);
-					return { capacity, tech };
-				};
-
-				const matches = (element, state) => {
-					if (!element) return false;
-					const entryCapacity = element.dataset.capacity || 'professional';
-					if (state.capacity !== 'all' && entryCapacity !== state.capacity) {
-						return false;
+				(() => {
+					const form = document.querySelector('#experience-filters');
+					if (!form) {
+						return;
 					}
 
-					if (state.tech.length === 0) {
-						return true;
-					}
+					const dom = {
+						highlightSection: document.querySelector("[data-role='highlight-section']"),
+						highlightList: document.querySelector("[data-role='highlight-list']"),
+						highlightMessage: document.querySelector("[data-role='highlight-message']"),
+						featuredEntries: Array.from(document.querySelectorAll("[data-entry='featured']")),
+						experienceEntries: Array.from(document.querySelectorAll("[data-entry='experience']")),
+						listSection: document.querySelector("[data-role='experience-list']"),
+						emptyState: document.querySelector("[data-role='experience-empty']"),
+						techGroups: Array.from(form.querySelectorAll("[data-role='tech-group']")),
+					};
 
-					const entryTech = parseTech(element.dataset.tech || '');
-					return state.tech.every((tech) => entryTech.includes(tech));
-				};
+					const highlightMessages = {
+						withHighlights:
+							dom.highlightMessage?.dataset.withHighlights || dom.highlightMessage?.textContent || '',
+						withoutHighlights:
+							dom.highlightMessage?.dataset.withoutHighlights || dom.highlightMessage?.textContent || '',
+					};
 
-				const filterEntries = (entries, state) => {
-					let visibleCount = 0;
-					entries.forEach((entry) => {
-						const visible = matches(entry, state);
-						entry.hidden = !visible;
-						if (visible) visibleCount += 1;
-					});
-					return visibleCount;
-				};
-
-				const update = () => {
-					const state = readFormState();
-					const visibleHighlights = filterEntries(dom.featuredEntries, state);
-					const visibleExperiences = filterEntries(dom.experienceEntries, state);
-
-					if (dom.highlightList) {
-						dom.highlightList.hidden = visibleHighlights === 0;
-					}
-
-					if (dom.highlightSection) {
-						dom.highlightSection.dataset.hasHighlights = visibleHighlights > 0 ? 'true' : 'false';
-					}
-
-					if (dom.highlightMessage) {
-						const message = visibleHighlights > 0
-							? highlightMessages.withHighlights
-							: highlightMessages.withoutHighlights;
-						if (message) {
-							dom.highlightMessage.textContent = message;
-						}
-					}
-
-					if (dom.listSection) {
-						const hasEntries = dom.experienceEntries.length > 0;
-						dom.listSection.hidden = hasEntries && visibleExperiences === 0;
-					}
-
-					if (dom.emptyState) {
-						dom.emptyState.hidden = visibleHighlights + visibleExperiences > 0;
-					}
-
-					ensureSelectedGroupsOpen();
-				};
-
-				form.addEventListener('input', update);
-				form.addEventListener('change', update);
-				form.addEventListener('reset', () => {
-					requestAnimationFrame(() => {
+					const ensureSelectedGroupsOpen = () => {
 						dom.techGroups.forEach((group) => {
-							const defaultOpen = group.dataset.defaultOpen === 'true';
-							group.toggleAttribute('open', defaultOpen);
+							if (group.hasAttribute('open')) return;
+							const hasChecked = group.querySelector("input[name='tech']:checked");
+							if (hasChecked) {
+								group.setAttribute('open', '');
+							}
 						});
-						update();
-					});
-				});
+					};
 
-				update();
+					const parseTech = (value) => (value ? value.split('|').filter(Boolean) : []);
+
+					const readFormState = () => {
+						const capacity = form.elements.namedItem('capacity')?.value ?? 'all';
+						const tech = Array.from(form.querySelectorAll("input[name='tech']:checked"))
+							.map((input) => (input instanceof HTMLInputElement ? input.value : ''))
+							.filter(Boolean);
+						return { capacity, tech };
+					};
+
+					const matches = (element, state) => {
+						if (!element) return false;
+						const entryCapacity = element.dataset.capacity || 'professional';
+						if (state.capacity !== 'all' && entryCapacity !== state.capacity) {
+							return false;
+						}
+
+						if (state.tech.length === 0) {
+							return true;
+						}
+
+						const entryTech = parseTech(element.dataset.tech || '');
+						return state.tech.every((tech) => entryTech.includes(tech));
+					};
+
+					const filterEntries = (entries, state) => {
+						let visibleCount = 0;
+						entries.forEach((entry) => {
+							const visible = matches(entry, state);
+							entry.hidden = !visible;
+							if (visible) visibleCount += 1;
+						});
+						return visibleCount;
+					};
+
+					const update = () => {
+						const state = readFormState();
+						const visibleHighlights = filterEntries(dom.featuredEntries, state);
+						const visibleExperiences = filterEntries(dom.experienceEntries, state);
+
+						if (dom.highlightList) {
+							dom.highlightList.hidden = visibleHighlights === 0;
+						}
+
+						if (dom.highlightSection) {
+							dom.highlightSection.dataset.hasHighlights = visibleHighlights > 0 ? 'true' : 'false';
+						}
+
+						if (dom.highlightMessage) {
+							const message =
+								visibleHighlights > 0
+									? highlightMessages.withHighlights
+									: highlightMessages.withoutHighlights;
+							if (message) {
+								dom.highlightMessage.textContent = message;
+							}
+						}
+
+						if (dom.listSection) {
+							const hasEntries = dom.experienceEntries.length > 0;
+							dom.listSection.hidden = hasEntries && visibleExperiences === 0;
+						}
+
+						if (dom.emptyState) {
+							dom.emptyState.hidden = visibleHighlights + visibleExperiences > 0;
+						}
+
+						ensureSelectedGroupsOpen();
+					};
+
+					form.addEventListener('input', update);
+					form.addEventListener('change', update);
+					form.addEventListener('reset', () => {
+						requestAnimationFrame(() => {
+							dom.techGroups.forEach((group) => {
+								const defaultOpen = group.dataset.defaultOpen === 'true';
+								group.toggleAttribute('open', defaultOpen);
+							});
+							update();
+						});
+					});
+
+					update();
+				})();
 			</script>
 		)}
 	</body>
