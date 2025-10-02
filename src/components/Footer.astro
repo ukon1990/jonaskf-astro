@@ -4,19 +4,21 @@ import SocialLinks from './SocialLinks.astro';
 const today = new Date();
 ---
 
-<footer>
+<footer class="site-footer">
   <p>© {today.getFullYear()} Jonas Munthe Flønes.</p>
-  <SocialLinks class="footer-social-links" />
+  <SocialLinks class="footer-social-links" justify="center" />
 </footer>
 <style>
-  footer {
+  .site-footer {
     padding: 2em 1em 6em 1em;
     background: linear-gradient(var(--gray-gradient)) no-repeat;
     color: rgb(var(--gray));
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .footer-social-links {
-    justify-content: center;
     gap: 1.4em;
     margin: 1em 0 0 0;
   }
