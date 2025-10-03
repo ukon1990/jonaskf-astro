@@ -9,5 +9,4 @@ export default defineConfig({
   site: 'https://d1aft2yhy01cjd.cloudfront.net',
   integrations: [mdx(), sitemap()],
   output: 'static',
-  trailingSlash: 'always',
 });
