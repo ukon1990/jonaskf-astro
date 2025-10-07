@@ -1,0 +1,54 @@
+---
+export interface Props {
+	tags: string[];
+	size?: 'small' | 'medium';
+	class?: string;
+}
+
+const { tags, size = 'medium', class: className = '' } = Astro.props;
+---
+
+{tags && tags.length > 0 && (
+	<div class={`tags tags--${size} ${className}`}>
+		{tags.map((tag) => (
+			<span class="tag">{tag}</span>
+		))}
+	</div>
+)}
+
+<style>
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin: 1rem 0;
+	}
+
+	.tags--small {
+		gap: 0.375rem;
+		margin: 0.75rem 0 0 0;
+	}
+
+	.tag {
+		display: inline-block;
+		padding: 0.25rem 0.75rem;
+		background-color: rgb(var(--accent-light));
+		color: rgb(var(--accent-dark));
+		border-radius: 1rem;
+		font-size: 0.85rem;
+		font-weight: 500;
+		text-decoration: none;
+		transition: background-color 0.2s ease;
+	}
+
+	.tags--small .tag {
+		padding: 0.2rem 0.6rem;
+		border-radius: 0.8rem;
+		font-size: 0.75rem;
+	}
+
+	.tag:hover {
+		background-color: rgb(var(--accent));
+		color: white;
+	}
+</style>
