@@ -64,13 +64,13 @@ const hasTechFilter = techFilterGroups.length > 0;
 	<form class="filters" id="experience-filters">
 		<header class="filters-header">
 			<h2>Filter engagements</h2>
-			<button type="reset" class="filters-reset">Clear filters</button>
+			<button type="reset" class="btn-reset">Clear filters</button>
 		</header>
-		<div class="filters-body">
+		<div class="filters-body grid-auto-fit--sm">
 			{hasCapacityFilter && (
 				<label class="filters-select">
 					<span>Capacity</span>
-					<select name="capacity">
+					<select name="capacity" class="select">
 						<option value="all">All capacities</option>
 						{capacityOptions.map((option) => (
 							<option value={option.value}>{option.label}</option>

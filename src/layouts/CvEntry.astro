@@ -224,9 +224,6 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 			}
 			.hero-image {
 				margin: 2rem 0;
-				border-radius: 16px;
-				overflow: hidden;
-				box-shadow: var(--box-shadow);
 			}
 				.tags {
 					margin: 1.5rem 0 0 0;
@@ -257,9 +254,6 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 				}
 				.tech-parent-list,
 				.tech-children {
-					margin: 0;
-					padding: 0;
-					list-style: none;
 					display: grid;
 					gap: 0.45rem;
 				}
@@ -372,7 +366,7 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 								{groupedTech.map((group) => (
 									<div class="tech-group">
 										<h3>{group.label}</h3>
-										<ul class="tech-parent-list">
+										<ul class="list-reset tech-parent-list">
 											{group.entries.map((entry) => (
 												<li>
 												{entry.website ? (
@@ -394,7 +388,7 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 													</span>
 												)}
 												{entry.children.length > 0 && (
-													<ul class="tech-children">
+													<ul class="list-reset tech-children">
 														{entry.children.map((child) => (
 															<li>
 																{child.website ? (

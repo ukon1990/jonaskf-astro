@@ -33,12 +33,12 @@ const { tags, size = 'medium', class: className = '' } = Astro.props;
 		display: inline-block;
 		padding: 0.25rem 0.75rem;
 		background-color: rgb(var(--accent-light));
-		color: rgb(var(--accent-dark));
+		color: var(--accent-dark);
 		border-radius: 1rem;
 		font-size: 0.85rem;
 		font-weight: 500;
 		text-decoration: none;
-		transition: background-color 0.2s ease;
+		transition: background-color 0.2s ease, color 0.2s ease;
 	}
 
 	.tags--small .tag {
@@ -48,7 +48,7 @@ const { tags, size = 'medium', class: className = '' } = Astro.props;
 	}
 
 	.tag:hover {
-		background-color: rgb(var(--accent));
+		background-color: var(--accent-dark);
 		color: white;
 	}
 </style>

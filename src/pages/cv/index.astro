@@ -134,21 +134,9 @@ const highlightIntro =
 				color: rgb(var(--gray));
 				font-weight: 600;
 			}
-			.hero-grid {
-				display: grid;
-				gap: 1.5rem;
-				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-			}
+			/* hero-grid now uses .grid-auto-fit from global.css */
 			.card-hero-image {
 				margin-bottom: 1rem;
-				border-radius: 16px;
-				overflow: hidden;
-				box-shadow: var(--box-shadow);
-			}
-			.card-hero-image img {
-				display: block;
-				width: 100%;
-				height: auto;
 			}
 			.filters {
 				display: grid;
@@ -171,29 +159,8 @@ const highlightIntro =
 				font-size: 1.1rem;
 				color: rgb(var(--gray-dark));
 			}
-			.filters-reset {
-				padding: 0.45rem 0.9rem;
-				border-radius: 12px;
-				border: 1px solid rgba(var(--gray), 0.25);
-				background: transparent;
-				font-size: 0.85rem;
-				font-weight: 600;
-				color: rgb(var(--gray));
-				cursor: pointer;
-				transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-			}
-			.filters-reset:hover {
-				color: var(--accent);
-				border-color: color-mix(in srgb, var(--accent) 50%, rgba(var(--gray), 0.25));
-			}
-			.filters-reset:focus-visible {
-				outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
-				outline-offset: 2px;
-			}
+			/* filters-reset now uses .btn-reset from global.css */
 			.filters-body {
-				display: grid;
-				gap: 1.5rem;
-				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 				align-items: start;
 			}
 			.filters-select {
@@ -206,23 +173,7 @@ const highlightIntro =
 				font-weight: 600;
 				color: rgb(var(--gray-dark));
 			}
-			.filters-select select {
-				padding: 0.65rem 0.85rem;
-				border-radius: 12px;
-				border: 1px solid rgba(var(--gray), 0.2);
-				font-size: 1rem;
-				font-family: inherit;
-				background: var(--card-background);
-				transition: border-color 0.2s ease, box-shadow 0.2s ease;
-			}
-			.filters-select select:hover {
-				border-color: color-mix(in srgb, var(--accent) 45%, var(--card-background) 55%);
-			}
-			.filters-select select:focus-visible {
-				border-color: var(--accent);
-				box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
-				outline: none;
-			}
+			/* select now uses .select from global.css */
 			.tech-accordion {
 				display: grid;
 				gap: 0.75rem;
@@ -302,7 +253,7 @@ const highlightIntro =
 				color: rgb(var(--gray));
 			}
 			@media (max-width: 960px) {
-				.hero-grid {
+				.grid-auto-fit {
 					grid-template-columns: 1fr;
 				}
 			}

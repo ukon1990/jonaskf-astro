@@ -30,11 +30,7 @@ const featured = posts[0];
 				gap: 2rem;
 				align-items: center;
 			}
-			.hero-image {
-				border-radius: 16px;
-				overflow: hidden;
-				box-shadow: var(--box-shadow);
-			}
+			/* .hero-image now uses utility from global.css */
 			.hero a {
 				display: block;
 				text-decoration: none;
@@ -49,9 +45,6 @@ const featured = posts[0];
 			.post-list {
 				display: grid;
 				gap: 1.5rem;
-				margin: 0;
-				padding: 0;
-				list-style: none;
 			}
 			.card h2 {
 				margin-bottom: 0.5rem;
@@ -90,7 +83,7 @@ const featured = posts[0];
 			)}
 
 			<section aria-label="All posts">
-				<ul class="post-list">
+				<ul class="list-reset post-list">
 					{posts.map((post) => (
 						<li class="card">
 							<a class="card-link" href={`/blog/${post.id}/`}>

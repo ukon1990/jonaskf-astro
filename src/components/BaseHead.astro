@@ -72,8 +72,7 @@ const { title, description, image = FallbackImage } = Astro.props;
 			if (!toggle) {
 				return;
 			}
-			const targetLabel = activeTheme === 'light' ? 'Use dark theme' : 'Use light theme';
-			toggle.textContent = targetLabel;
+			const targetLabel = activeTheme === 'light' ? 'Switch to dark theme' : 'Switch to light theme';
 			toggle.setAttribute('aria-label', targetLabel);
 			toggle.setAttribute('aria-pressed', overrideTheme ? 'true' : 'false');
 		};
