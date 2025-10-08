@@ -1,62 +1,102 @@
-# Astro Starter Kit: Blog
+# Personal Website
 
-```sh
-pnpm create astro@latest -- --template blog
-```
+This is the repository for my personal website, built with [Astro](https://astro.build/) to create a fast, static website rather than a traditional web application.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## About This Site
 
-Features:
+This personal website showcases my portfolio, blog posts, and CV entries. It's built using Astro's static site generation capabilities to deliver optimal performance and SEO benefits.
 
-- ✅ Minimal styling (make it your own!)
+You can visit the live site at **[https://jonaskf.net](https://jonaskf.net)** to see it in action!
+
+### Features
+
+- ✅ Minimal, clean styling
 - ✅ 100/100 Lighthouse performance
 - ✅ SEO-friendly with canonical URLs and OpenGraph data
 - ✅ Sitemap support
 - ✅ RSS Feed support
-- ✅ Markdown & MDX support
+- ✅ Markdown & MDX support for blog posts and CV entries
+- ✅ Static site generation for fast loading times
 
 ## 🚀 Project Structure
 
-Inside of your Astro project, you'll see the following folders and files:
+This personal website follows Astro's standard structure:
 
 ```text
-├── public/
+├── public/                 # Static assets (images, fonts, etc.)
 ├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
+│   ├── components/         # Reusable Astro components
+│   ├── content/           # Content collections (blog posts, CV entries)
+│   │   ├── blog/          # Blog post markdown files
+│   │   └── cv/            # CV entry markdown files
+│   ├── layouts/           # Page layouts
+│   ├── pages/             # Website pages (routes)
+│   └── styles/            # Global CSS styles
+├── docs/                  # Documentation and how-to guides
+├── astro.config.mjs       # Astro configuration
 ├── README.md
 ├── package.json
 └── tsconfig.json
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+### Content Organization
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+- **Blog posts**: Stored in `src/content/blog/` as Markdown files
+- **CV entries**: Stored in `src/content/cv/` as Markdown files  
+- **Pages**: Located in `src/pages/` - each `.astro` or `.md` file becomes a route
+- **Components**: Reusable UI components in `src/components/`
+- **Static assets**: Images, fonts, and other static files in `public/`
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+The site uses Astro's Content Collections to manage blog posts and CV entries with type-safe frontmatter.
 
-Any static assets, like images, can be placed in the `public/` directory.
+## 🚀 Getting Started
 
-## 🧞 Commands
+To run this personal website on your own computer:
 
-All commands are run from the root of the project, from a terminal:
+### Prerequisites
+- Node.js (version 18 or higher)
+- pnpm package manager
+
+### Setup Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd jonaskf
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+
+3. **Start the development server**
+   ```bash
+   pnpm dev
+   ```
+   The site will be available at `http://localhost:4321`
+
+### Available Commands
 
 | Command                   | Action                                           |
 | :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+| `pnpm install`           | Installs dependencies                            |
+| `pnpm dev`               | Starts local dev server at `localhost:4321`     |
+| `pnpm build`             | Build your production site to `./dist/`         |
+| `pnpm preview`           | Preview your build locally, before deploying    |
+| `pnpm astro ...`         | Run CLI commands like `astro add`, `astro check` |
+| `pnpm astro -- --help`   | Get help using the Astro CLI                    |
+
+## 📚 Documentation
+
+For detailed guides and how-to instructions, check out the [docs/](./docs/) folder.
 
 ## 👀 Want to learn more?
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- [Astro Documentation](https://docs.astro.build) - Learn more about Astro
+- [Astro Discord Community](https://astro.build/chat) - Join the community
+- [Content Collections Guide](https://docs.astro.build/en/guides/content-collections/) - Learn about managing content
 
-## Credit
+## Credits
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+This website is built with [Astro](https://astro.build/) and inspired by the clean design of [Bear Blog](https://github.com/HermanMartinus/bearblog/).
