@@ -1,10 +1,9 @@
 name: Deploy to S3
 
-# Disabled - using FTP deployment instead
-# on:
-#   push:
-#     branches: [main]
-#   workflow_dispatch:
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
