@@ -6,6 +6,7 @@ customer: 'Tradesolution'
 customerUrl: 'https://www.tradesolution.no/'
 link: 'https://tradesolution.no/tjenester/bridge/'
 startDate: '2022-01-01'
+endDate: '2025-11-01'
 summary: >
   Contributed to the development and rollout of Tradesolution’s Bridge platform — a unified digital ecosystem for 
   supply chain collaboration, transport management, and EDI integration across the Norwegian grocery and hospitality 
