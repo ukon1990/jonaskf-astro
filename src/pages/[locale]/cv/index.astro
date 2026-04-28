@@ -5,7 +5,7 @@ import CvExperienceCard from '../../../components/CvExperienceCard.astro';
 import Footer from '../../../components/Footer.astro';
 import Header from '../../../components/Header.astro';
 import { SITE_TITLE } from '../../../consts';
-import { getLocaleFromParams, ui, type Locale } from '../../../lib/i18n';
+import { getLocaleFromParams, localeLabels, locales, ui, type Locale } from '../../../lib/i18n';
 
 type CvEntry = CollectionEntry<'cv'>;
 
@@ -33,6 +33,11 @@ const searchPlaceholder =
 const searchLabel = locale === 'no' ? 'Søk i erfaringer' : 'Search engagements';
 const emptySearchLabel =
   locale === 'no' ? 'Ingen erfaringer matcher søket.' : 'No engagements match your search.';
+const pdfFileByLocale: Record<Locale, string> = {
+  no: '/cv/jonas-munthe-flones-cv-no.pdf',
+  en: '/cv/jonas-munthe-flones-cv-en.pdf',
+};
+const selectedPdf = pdfFileByLocale[locale as Locale];
 ---
 
 <!doctype html>
@@ -58,6 +63,15 @@ const emptySearchLabel =
         margin: 0;
         color: rgb(var(--gray));
         font-size: 1.08rem;
+      }
+      .hero-description-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .hero-description-row p {
+        flex: 1;
       }
       .search-field {
         position: relative;
@@ -89,6 +103,90 @@ const emptySearchLabel =
         box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
         outline: none;
       }
+      .pdf-open-button,
+      .pdf-download-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2.7rem;
+        padding: 0.6rem 1rem;
+        border: 1px solid var(--border-color-strong);
+        border-radius: 2px;
+        background: rgb(var(--black));
+        color: var(--card-background);
+        font-family: 'Work Sans', 'Manrope', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .pdf-open-button {
+        white-space: nowrap;
+      }
+      .pdf-modal {
+        border: 0;
+        border-radius: 10px;
+        width: min(96vw, 980px);
+        padding: 0;
+      }
+      .pdf-modal::backdrop {
+        background: rgba(12, 12, 14, 0.56);
+      }
+      .pdf-modal__content {
+        padding: 1rem;
+        display: grid;
+        gap: 1rem;
+      }
+      .pdf-modal__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .pdf-modal__title {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .pdf-close-button {
+        min-height: 2.2rem;
+        min-width: 2.2rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background: var(--surface-low);
+        color: rgb(var(--black));
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .pdf-controls {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .pdf-controls label {
+        display: inline-flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        font-size: 0.88rem;
+      }
+      .pdf-controls select {
+        min-height: 2.7rem;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: var(--surface-low);
+        color: rgb(var(--black));
+        padding: 0.4rem 0.6rem;
+        font: inherit;
+      }
+      .pdf-frame {
+        width: 100%;
+        min-height: 640px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: white;
+      }
       .projects-grid {
         display: grid;
         gap: 2rem;
@@ -117,6 +215,10 @@ const emptySearchLabel =
         .hero {
           margin-bottom: 3rem;
         }
+        .hero-description-row {
+          flex-direction: column;
+          align-items: flex-start;
+        }
         .projects-grid {
           grid-template-columns: 1fr;
         }
@@ -142,7 +244,12 @@ const emptySearchLabel =
             }
           </h1>
         </header>
-        <p>{labels.description}</p>
+        <div class="hero-description-row">
+          <p>{labels.description}</p>
+          <button type="button" class="pdf-open-button" data-cv-pdf-open>
+            {labels.pdfDownloadLabel}
+          </button>
+        </div>
         <label class="search-field">
           <span class="sr-only">{searchLabel}</span>
           <svg
@@ -160,6 +267,45 @@ const emptySearchLabel =
           <input type="search" placeholder={searchPlaceholder} data-project-search />
         </label>
       </section>
+
+      <dialog class="pdf-modal" data-cv-pdf-modal aria-label={labels.pdfPreviewLabel}>
+        <div class="pdf-modal__content">
+          <div class="pdf-modal__header">
+            <h2 class="pdf-modal__title">{labels.pdfTitle}</h2>
+            <button
+              type="button"
+              class="pdf-close-button"
+              aria-label={locale === 'no' ? 'Lukk' : 'Close'}
+              data-cv-pdf-close
+            >
+              ✕
+            </button>
+          </div>
+          <p>{labels.pdfDescription}</p>
+          <div class="pdf-controls">
+            <label>
+              <span>{labels.pdfLocaleLabel}</span>
+              <select data-cv-pdf-locale>
+                {
+                  locales.map((language) => (
+                    <option value={language} selected={language === locale}>
+                      {localeLabels[language]}
+                    </option>
+                  ))
+                }
+              </select>
+            </label>
+            <a class="pdf-download-link" href={selectedPdf} download data-cv-pdf-download>
+              {labels.pdfDownloadLabel}
+            </a>
+          </div>
+          <iframe
+            class="pdf-frame"
+            title={labels.pdfPreviewLabel}
+            src={selectedPdf}
+            data-cv-pdf-frame></iframe>
+        </div>
+      </dialog>
 
       <!-- CvExperienceFilters is intentionally not rendered for now; keep it available for a later filter UI. -->
       <section
@@ -198,6 +344,36 @@ const emptySearchLabel =
 
         search.addEventListener('input', update);
         update();
+
+        const localeSelect = document.querySelector('[data-cv-pdf-locale]');
+        const frame = document.querySelector('[data-cv-pdf-frame]');
+        const downloadLink = document.querySelector('[data-cv-pdf-download]');
+        const openButton = document.querySelector('[data-cv-pdf-open]');
+        const closeButton = document.querySelector('[data-cv-pdf-close]');
+        const modal = document.querySelector('[data-cv-pdf-modal]');
+        const fileByLocale = {
+          no: '/cv/jonas-munthe-flones-cv-no.pdf',
+          en: '/cv/jonas-munthe-flones-cv-en.pdf',
+        };
+        if (openButton && modal) {
+          openButton.addEventListener('click', () => modal.showModal());
+        }
+        if (closeButton && modal) {
+          closeButton.addEventListener('click', () => modal.close());
+          modal.addEventListener('click', (event) => {
+            if (event.target === modal) modal.close();
+          });
+        }
+        if (localeSelect && frame && downloadLink) {
+          const syncPdf = () => {
+            const selectedLocale = localeSelect.value;
+            const nextPdf = fileByLocale[selectedLocale];
+            if (!nextPdf) return;
+            frame.src = nextPdf;
+            downloadLink.href = nextPdf;
+          };
+          localeSelect.addEventListener('change', syncPdf);
+        }
       })();
     </script>
   </body>

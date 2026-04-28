@@ -4,9 +4,10 @@
   "version": "0.0.1",
   "scripts": {
     "start": "astro dev",
-    "build": "astro build",
+    "build": "pnpm run generate:cv-pdf && astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "generate:cv-pdf": "tsx scripts/generate-cv-pdf.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -17,6 +18,7 @@
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.6.0",
     "astro": "^5.14.1",
+    "pdf-lib": "^1.17.1",
     "sharp": "^0.34.3"
   },
   "devDependencies": {
@@ -29,6 +31,7 @@
     "globals": "^16.4.0",
     "prettier": "^3.6.2",
     "prettier-plugin-astro": "^0.14.1",
+    "tsx": "^4.20.6",
     "typescript-eslint": "^8.45.0"
   }
 }
