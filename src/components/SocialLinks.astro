@@ -2,6 +2,7 @@
 import { markHTMLString } from 'astro/runtime/server/index.js';
 import GithubIcon from '../icons/github.svg?raw';
 import LinkedinIcon from '../icons/linkedin.svg?raw';
+import { socialLinks } from '../lib/socialLinks';
 
 const { class: className = '', justify = 'flex-start' } = Astro.props;
 
@@ -19,7 +20,7 @@ type SocialLink = {
 const socials: SocialLink[] = [
   {
     id: 'github',
-    href: 'https://github.com/ukon1990',
+    href: socialLinks.github,
     label: 'GitHub',
     title: 'Visit Jonas on GitHub',
     external: true,
@@ -27,7 +28,7 @@ const socials: SocialLink[] = [
   },
   {
     id: 'linkedin',
-    href: 'https://www.linkedin.com/in/jonas-munthe-fl%C3%B8nes-07b68595',
+    href: socialLinks.linkedin,
     label: 'LinkedIn',
     title: 'Connect with Jonas on LinkedIn',
     external: true,

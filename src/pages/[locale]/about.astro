@@ -4,6 +4,7 @@ import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import { SITE_TITLE } from '../../consts';
 import { getLocaleFromParams, ui, type Locale } from '../../lib/i18n';
+import { socialLinks } from '../../lib/socialLinks';
 
 export function getStaticPaths() {
   return [{ params: { locale: 'no' } }, { params: { locale: 'en' } }];
@@ -35,6 +36,9 @@ const description =
         color: rgb(var(--gray));
         font-size: 1.08rem;
       }
+      main a {
+        color: inherit;
+      }
     </style>
   </head>
   <body>
@@ -42,6 +46,12 @@ const description =
     <main>
       <h1>{locale === 'no' ? 'Om' : 'About'}</h1>
       <p>{ui[locale].siteDescription}</p>
+      <p>
+        {locale === 'no' ? 'Ta gjerne kontakt via ' : 'Feel free to reach out on '}
+        <a href={socialLinks.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+        {locale === 'no' ? ' eller ' : ' or '}
+        <a href={socialLinks.github} target="_blank" rel="noreferrer">GitHub</a>.
+      </p>
     </main>
     <Footer />
   </body>
