@@ -1,5 +1,5 @@
-/// <reference path="../.astro/types.d.ts" />
-/// <reference types="astro/client" />
+import '../.astro/types.d.ts';
+import 'astro/client';
 
 declare module '*.svg?raw' {
   const content: string;

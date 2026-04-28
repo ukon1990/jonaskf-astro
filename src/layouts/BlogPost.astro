@@ -14,7 +14,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 
 <html lang="en">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead title={title} description={description} locale="en" alternateLocales={['en']} />
 		<style>
 			main {
 				width: calc(100% - 2em);
@@ -54,7 +54,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 	</head>
 
 	<body>
-		<Header />
+		<Header locale="en" />
 		<main>
 			<article>
 				<div class="hero-image">

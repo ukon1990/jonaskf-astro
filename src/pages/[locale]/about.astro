@@ -1,0 +1,44 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+import { getLocaleFromParams, ui, type Locale } from '../../lib/i18n';
+
+export function getStaticPaths() {
+	return [{ params: { locale: 'no' } }, { params: { locale: 'en' } }];
+}
+
+const locale = getLocaleFromParams(Astro.params);
+const title = locale === 'no' ? `Om ${SITE_TITLE}` : `Working with ${SITE_TITLE}`;
+const description =
+	locale === 'no'
+		? 'Hvordan jeg jobber med produktutvikling og team.'
+		: 'How I approach product engineering engagements and collaborate with teams.';
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <BaseHead title={title} description={description} locale={locale as Locale} />
+    <style>
+      main {
+        width: 720px;
+        max-width: calc(100% - 2rem);
+        margin: 0 auto;
+        padding: 3rem 1rem 5rem 1rem;
+      }
+      main h1 {
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <Header locale={locale as Locale} />
+    <main>
+      <h1>{locale === 'no' ? 'Om' : 'About'}</h1>
+      <p>{ui[locale].siteDescription}</p>
+    </main>
+    <Footer />
+  </body>
+</html>

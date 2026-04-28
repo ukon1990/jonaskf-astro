@@ -1,6 +1,7 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 import { assignableTechSlugs } from "./data/tech";
+import { cvLoader } from "./lib/cvLoader";
 
 const techEnum = z.enum(
   assignableTechSlugs as [
@@ -24,9 +25,11 @@ const blog = defineCollection({
 });
 
 const cv = defineCollection({
-  loader: glob({ base: "./src/content/cv", pattern: "**/*.md" }),
+  loader: cvLoader(),
   schema: ({ image }) =>
     z.object({
+      locale: z.enum(["no", "en"]),
+      slug: z.string(),
       title: z.string(),
       role: z.string(),
       employer: z.string().optional(),

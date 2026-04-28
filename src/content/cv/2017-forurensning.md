@@ -1,38 +1,53 @@
 ---
-title: 'Forurensning Web Client'
-role: 'Frontend Developer'
-employer: 'Crayon Consulting AS'
-customer: 'Miljødirektoratet'
-projectName: 'Forurensning – prototype ny webklient'
-startDate: '2017-08-01'
-endDate: '2018-12-01'
-summary: 'I designed and built a modern Angular 7 web client for Miljødirektoratet’s legacy Forurensning application, enabling secure REST‑API communication with a .NET/Entity Framework back‑end.'
-tech:
-  - angular
-  - jasmine
-  - protractor
-  - bootstrap
-  - angular-material
-  - typescript
-  - adobe-xd
-  - google-analytics
+{
+  "slug": "2017-forurensning",
+  "employer": "Crayon Consulting AS",
+  "customer": "Miljødirektoratet",
+  "projectName": "Forurensning – prototype ny webklient",
+  "startDate": "2017-08-01",
+  "endDate": "2018-12-01",
+  "tech": ["angular", "jasmine", "protractor", "bootstrap", "angular-material", "typescript", "adobe-xd", "google-analytics"],
+  "translations": {
+    "no": {
+      "title": "Forurensning webklient",
+      "role": "Frontendutvikler",
+      "summary": "Jeg hadde ansvar for spesifisering, prototyping og implementering av en ny Angular-basert webklient for Miljødirektoratets Forurensning-system."
+    },
+    "en": {
+      "title": "Forurensning Web Client",
+      "role": "Frontend Developer",
+      "summary": "I was responsible for specification, prototyping and implementation of a new Angular-based web client for Miljødirektoratet’s Forurensning system."
+    }
+  }
+}
 ---
 
-### Mission
+:::no
+## Prosjekt
 
-The **Forurensning** tool is Miljødirektoratet’s case‑management system used across a wide range of environmental domains (aquaculture, waste, CO₂ compensation, etc.).  
-Originally written in WinForms, it needed a modern web interface that could replace the desktop client while maintaining full functionality and a seamless back‑end connection.
+Forurensning var et saksbehandlingsverktøy brukt av Fylkesmannen og Miljødirektoratet på flere fagområder, blant annet akvakultur, avfall, avløp, CO2-kompensasjon, deponi og kvote. Applikasjonen var opprinnelig laget i WinForms, og prosjektet skulle lage en moderne webklient som forløper til Tilde.
 
-### Highlights
+## Rolle og bidrag
 
-- **Specification & prototyping** of the new web client, collaborating closely with Miljødirektoratet’s technical staff and subject‑matter experts.
-- Built the **Angular 7** front‑end, employing **Bootstrap** and **Angular Material** for a responsive UI.
-- Integrated **Adobe Experience Design** mock‑ups into the final implementation.
-- Established a secure **REST API** bridge to the existing **.NET + Entity Framework** back‑end.
-- Implemented automated **unit tests** with **Jasmine** and end‑to‑end tests using **Protractor**.
-- Added **Google Analytics** tracking to monitor user interactions and optimize the user experience.
+- Ansvar for spesifisering og prototyping av ny webklient.
+- Tett samarbeid med tekniske ressurser og fagpersoner hos Miljødirektoratet.
+- Implementerte frontend i Angular 7 med TypeScript, Bootstrap og Angular Material.
+- Koblet webklienten mot eksisterende backend via REST API.
+- Testoppsett med Jasmine og Protractor.
+- Brukte Adobe Experience Design og Google Analytics i arbeidet med brukeropplevelse og innsikt.
+:::
 
-### Impact
+:::en
+## Project
 
-The new web client replaced the aging WinForms application, providing Miljødirektoratet’s users with a modern, accessible interface that communicates efficiently with the back‑end.  
-The prototype laid the foundation for a full migration, enabling future enhancements and a smoother user journey across all environmental compliance areas.
+Forurensning was a case-management tool used by regional authorities and Miljødirektoratet across several environmental domains, including aquaculture, waste, wastewater, CO2 compensation, landfills and quotas. The application was originally built in WinForms, and the project created a modern web client as a precursor to Tilde.
+
+## Role and contribution
+
+- Responsible for specification and prototyping of the new web client.
+- Close collaboration with technical staff and domain experts at Miljødirektoratet.
+- Implemented the front end in Angular 7 with TypeScript, Bootstrap and Angular Material.
+- Connected the web client to the existing backend through REST APIs.
+- Test setup with Jasmine and Protractor.
+- Used Adobe Experience Design and Google Analytics when working on user experience and insight.
+:::

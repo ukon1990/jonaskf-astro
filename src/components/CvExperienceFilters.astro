@@ -1,6 +1,7 @@
 ---
 import FilterCheckbox from './FilterCheckbox.astro';
 import type { AssignableTechSlug } from '../data/tech';
+import { ui, type Locale } from '../lib/i18n';
 
 interface CapacityOption {
 	value: string;
@@ -26,12 +27,14 @@ interface TechFilterGroup {
 interface Props {
 	capacityOptions: CapacityOption[];
 	techFilters: TechFilterOption[];
+	locale: Locale;
 }
 
-const { capacityOptions, techFilters } = Astro.props;
+const { capacityOptions, techFilters, locale } = Astro.props;
+const labels = ui[locale].cv;
 
 const formatTechnologyCount = (count: number) =>
-	`${count} ${count === 1 ? 'technology' : 'technologies'}`;
+	`${count} ${count === 1 ? labels.technologySingular : labels.technologyPlural}`;
 
 const buildTechGroups = (filters: TechFilterOption[]): TechFilterGroup[] => {
 	const groups = new Map<string, TechFilterGroup>();
@@ -63,15 +66,15 @@ const hasTechFilter = techFilterGroups.length > 0;
 {(hasCapacityFilter || hasTechFilter) && (
 	<form class="filters" id="experience-filters">
 		<header class="filters-header">
-			<h2>Filter engagements</h2>
-			<button type="reset" class="btn-reset">Clear filters</button>
+			<h2>{labels.filterTitle}</h2>
+			<button type="reset" class="btn-reset">{labels.clearFilters}</button>
 		</header>
 		<div class="filters-body grid-auto-fit--sm">
 			{hasCapacityFilter && (
 				<label class="filters-select">
-					<span>Capacity</span>
+					<span>{labels.capacity}</span>
 					<select name="capacity" class="select">
-						<option value="all">All capacities</option>
+						<option value="all">{labels.allCapacities}</option>
 						{capacityOptions.map((option) => (
 							<option value={option.value}>{option.label}</option>
 						))}
@@ -80,7 +83,7 @@ const hasTechFilter = techFilterGroups.length > 0;
 			)}
 			{hasTechFilter && (
 				<fieldset class="filters-select filters-select--tech">
-					<legend>Tech</legend>
+					<legend>{labels.tech}</legend>
 					<div class="tech-accordion">
 						{techFilterGroups.map((group, index) => (
 							<details

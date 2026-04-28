@@ -1,0 +1,11 @@
+---
+import LocaleRedirect from '../components/LocaleRedirect.astro';
+
+export function getStaticPaths() {
+	return [];
+}
+
+const path = Astro.params.path ?? '/';
+---
+
+<LocaleRedirect path={path} />

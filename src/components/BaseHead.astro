@@ -5,16 +5,20 @@ import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import FallbackImage from '../assets/blog-placeholder-1.jpg';
 import { SITE_TITLE } from '../consts';
+import { locales, localizePath, stripLocale, type Locale } from '../lib/i18n';
 
 interface Props {
 	title: string;
 	description: string;
 	image?: ImageMetadata;
+	locale?: Locale;
+	alternateLocales?: Locale[];
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = FallbackImage } = Astro.props;
+const { title, description, image = FallbackImage, locale, alternateLocales = [...locales] } = Astro.props;
+const unlocalizedPath = stripLocale(Astro.url.pathname);
 ---
 
 <!-- Global Metadata -->
@@ -36,6 +40,13 @@ const { title, description, image = FallbackImage } = Astro.props;
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
+{locale && alternateLocales.map((targetLocale) => (
+	<link
+		rel="alternate"
+		hreflang={targetLocale}
+		href={new URL(localizePath(unlocalizedPath, targetLocale), Astro.site)}
+	/>
+))}
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>

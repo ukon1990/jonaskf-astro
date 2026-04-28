@@ -3,22 +3,50 @@ import { getCollection } from 'astro:content';
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
 import SocialLinks from './SocialLinks.astro';
+import {
+	localeLabels,
+	localeShortLabels,
+	locales,
+	localizePath,
+	switchLocalePath,
+	ui,
+	type Locale,
+} from '../lib/i18n';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const labels = ui[locale];
 
 const hasPublishedPosts = (
 	await getCollection('blog', ({ data }) => !data.draft)
 ).length > 0;
+const showBlog = locale === 'en' && hasPublishedPosts;
 ---
 
 <header>
 	<nav class="flex-between">
-		<h2><a href="/">{SITE_TITLE}</a></h2>
+		<h2><a href={localizePath('/', locale)}>{SITE_TITLE}</a></h2>
 		<div class="internal-links flex-wrap">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/cv">Experience</HeaderLink>
-			{hasPublishedPosts && <HeaderLink href="/blog">Blog</HeaderLink>}
+			<HeaderLink href={localizePath('/', locale)}>{labels.nav.home}</HeaderLink>
+			<HeaderLink href={localizePath('/cv', locale)}>{labels.nav.cv}</HeaderLink>
+			{showBlog && <HeaderLink href="/en/blog">{labels.nav.blog}</HeaderLink>}
 		</div>
 		<div class="header-actions">
 			<SocialLinks class="header-social-links" />
+			<div class="language-switcher" aria-label="Language">
+				{locales.map((targetLocale) => (
+					<a
+						href={switchLocalePath(Astro.url.pathname, targetLocale)}
+						aria-current={targetLocale === locale ? 'true' : undefined}
+						title={localeLabels[targetLocale]}
+					>
+						{localeShortLabels[targetLocale]}
+					</a>
+				))}
+			</div>
 			<button
 				type="button"
 				class="btn-icon theme-toggle"
@@ -84,6 +112,27 @@ const hasPublishedPosts = (
 		display: flex;
 		align-items: center;
 		gap: 1rem;
+	}
+
+	.language-switcher {
+		display: inline-flex;
+		align-items: center;
+		border: 1px solid rgba(var(--gray), 0.2);
+		border-radius: 999px;
+		overflow: hidden;
+	}
+
+	.language-switcher a {
+		padding: 0.35rem 0.55rem;
+		color: rgb(var(--gray-dark));
+		font-size: 0.78rem;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.language-switcher a[aria-current='true'] {
+		background: var(--accent);
+		color: white;
 	}
 
 	.header-social-links {

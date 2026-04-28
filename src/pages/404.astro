@@ -2,4 +2,4 @@
 import LocaleRedirect from '../components/LocaleRedirect.astro';
 ---
 
-<LocaleRedirect path="/about" />
+<LocaleRedirect path={Astro.url.pathname} />

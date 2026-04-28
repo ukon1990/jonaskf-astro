@@ -1,0 +1,104 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseHead from '../../../components/BaseHead.astro';
+import Footer from '../../../components/Footer.astro';
+import FormattedDate from '../../../components/FormattedDate.astro';
+import Header from '../../../components/Header.astro';
+import Tags from '../../../components/Tags.astro';
+import { SITE_TITLE } from '../../../consts';
+import { ui } from '../../../lib/i18n';
+
+const posts = (
+	await getCollection('blog', ({ data }) => !data.draft)
+).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+if (posts.length === 0) {
+	return Astro.redirect('/en/', 307);
+}
+
+const featured = posts[0];
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`Writing — ${SITE_TITLE}`} description={`${ui.en.siteDescription} Notes and case studies.`} locale="en" alternateLocales={['en']} />
+		<style>
+			.hero {
+				display: grid;
+				grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+				gap: 2rem;
+				align-items: center;
+			}
+			.hero a {
+				display: block;
+				text-decoration: none;
+				color: inherit;
+			}
+			.hero h1 {
+				margin-bottom: 0.5rem;
+			}
+			.hero p {
+				margin: 0 0 1rem 0;
+			}
+			.post-list {
+				display: grid;
+				gap: 1.5rem;
+			}
+			.card h2 {
+				margin-bottom: 0.5rem;
+			}
+			@media (max-width: 960px) {
+				.hero {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header locale="en" />
+		<main class="page-shell page-grid">
+			{featured && (
+				<section class="hero">
+					<a href={`/en/blog/${featured.id}/`}>
+						<p class="meta">
+							<FormattedDate date={featured.data.pubDate} locale="en" />
+						</p>
+						<h1>{featured.data.title}</h1>
+						<p>{featured.data.description}</p>
+						<Tags tags={featured.data.tags} size="small" />
+						{featured.data.heroImage && (
+							<div class="hero-image">
+								<Image
+									width={960}
+									height={540}
+									src={featured.data.heroImage}
+									alt={featured.data.title}
+								/>
+							</div>
+						)}
+					</a>
+				</section>
+			)}
+
+			<section aria-label="All posts">
+				<ul class="list-reset post-list">
+					{posts.map((post) => (
+						<li class="card">
+							<a class="card-link" href={`/en/blog/${post.id}/`}>
+								<p class="meta">
+									<FormattedDate date={post.data.pubDate} locale="en" />
+								</p>
+								<h2>{post.data.title}</h2>
+								<p>{post.data.description}</p>
+								<Tags tags={post.data.tags} size="small" />
+							</a>
+						</li>
+					))}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

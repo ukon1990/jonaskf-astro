@@ -1,39 +1,55 @@
 ---
-title: 'Skolelyst – School Milk Service'
-role: 'Fullstack Developer'
-employer: 'Crayon Consulting AS'
-customer: 'Tine'
-customerUrl: 'https://tine.no'
-link: https://www.skolelyst.no
-projectName: 'Skolelyst'
-startDate: '2019-08-01'
-endDate: '2019-12-01'
-summary: 'I maintained and expanded Tine’s Skolelyst platform, adding new features, integrations, and security while ensuring a smooth experience for ~200 000 users.'
-tech:
-  - react
-  - java
-  - spring-boot
-  - sql
-  - jenkins
-  - junit
-  - google-tag-manager
+{
+  "slug": "2019-skolelyst",
+  "employer": "Crayon Consulting AS",
+  "customer": "Tine",
+  "customerUrl": "https://tine.no",
+  "link": "https://www.skolelyst.no",
+  "projectName": "Skolelyst",
+  "startDate": "2019-08-01",
+  "endDate": "2019-12-01",
+  "tech": ["react", "java", "spring-boot", "sql", "jenkins", "junit", "google-tag-manager"],
+  "translations": {
+    "no": {
+      "title": "Skolelyst",
+      "role": "Fullstack-utvikler",
+      "summary": "Jeg hadde ansvar for forvaltning og videreutvikling av Tines Skolelyst-løsning, med arbeid på frontend, backend og integrasjoner for en tjeneste med rundt 200 000 brukere."
+    },
+    "en": {
+      "title": "Skolelyst",
+      "role": "Full-stack Developer",
+      "summary": "I maintained and extended Tine’s Skolelyst platform, working across frontend, backend and integrations for a service with around 200,000 users."
+    }
+  }
+}
 ---
 
-### Mission
+:::no
+## Prosjekt
 
-**Skolelyst** is Tine’s service that lets parents order school milk and other products for their children.  
-With approximately 200 000 users, an efficient and user‑friendly solution is essential.  
-I was responsible for maintaining and evolving the platform – both front‑end and back‑end – and for integrating with payment, credit‑card, and ERP partners.
+Skolelyst er Tines tjeneste for bestilling av skolemelk og andre produkter til barn. Løsningen hadde rundt 200 000 brukere, og stabilitet, sikkerhet og god brukskvalitet var viktig for at tjenesten skulle fungere i hverdagen.
 
-### Highlights
+## Rolle og bidrag
 
-- Built the **React** front‑end with **JavaScript** and **Redux**, adding two‑factor authentication backed by **Spring Security**.
-- Developed the **Spring Boot** back‑end in **Java 8**, using **Hibernate** and **MS SQL** for persistence.
-- Implemented **REST** and **SOAP** integrations with external services (NETS, Lindorff, M3).
-- Managed builds and deployments via **Git**, **Gradle**, **Flyway**, and **Jenkins**.
-- Centralised logging with **Splunk** and added performance monitoring through **Google Tag Manager**.
-- Acted as **Scrum Master**, leading the agile team, coordinating sprints, and driving continuous improvement.
+- Forvaltning og videreutvikling av løsningen.
+- React-frontend med JavaScript og Redux.
+- Spring Boot-backend i Java 8, Hibernate og SQL-database.
+- REST- og SOAP-integrasjoner mot blant annet NETS, Lindorff og M3.
+- Bygg og utrulling gjennom Git, Flyway, Gradle og Jenkins.
+- Logging og innsikt gjennom Splunk og Google Tag Manager.
+:::
 
-### Impact
+:::en
+## Project
 
-The enhanced platform supported 200 k+ daily users with a stable, secure experience, while the integration work enabled streamlined payment processing and data exchange with Tine’s partners.
+Skolelyst is Tine’s service for ordering school milk and other products for children. The solution had around 200,000 users, making stability, security and usability important for everyday operation.
+
+## Role and contribution
+
+- Maintenance and further development of the solution.
+- React front-end work with JavaScript and Redux.
+- Spring Boot backend in Java 8, Hibernate and SQL.
+- REST and SOAP integrations with services including NETS, Lindorff and M3.
+- Builds and deployments through Git, Flyway, Gradle and Jenkins.
+- Logging and insight through Splunk and Google Tag Manager.
+:::

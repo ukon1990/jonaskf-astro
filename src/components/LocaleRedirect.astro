@@ -1,0 +1,41 @@
+---
+import { SITE_TITLE } from '../consts';
+import { ui } from '../lib/i18n';
+
+interface Props {
+	path: string;
+}
+
+const { path } = Astro.props;
+const normalizedPath = path === '/' ? '/' : `/${path.replace(/^\/+|\/+$/g, '')}`;
+const fallbackHref = `/en${normalizedPath === '/' ? '/' : normalizedPath}`;
+const title = `${ui.en.redirect.title} — ${SITE_TITLE}`;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>{title}</title>
+		<script is:inline define:vars={{ normalizedPath }}>
+			const languages = navigator.languages && navigator.languages.length
+				? navigator.languages
+				: [navigator.language || ''];
+			if (/^\/(?:no|en)(?:\/|$)/.test(normalizedPath)) {
+				document.documentElement.dataset.redirectSkipped = 'true';
+			} else {
+			const isNorwegian = languages.some((language) => /^no\b|^nb\b|^nn\b/i.test(language));
+			const locale = isNorwegian ? 'no' : 'en';
+			const target = normalizedPath === '/' ? `/${locale}/` : `/${locale}${normalizedPath}`;
+			window.location.replace(target + window.location.search + window.location.hash);
+			}
+		</script>
+	</head>
+	<body>
+		<main>
+			<p>{ui.en.redirect.message}</p>
+			<p><a href={fallbackHref}>{ui.en.redirect.link}</a></p>
+		</main>
+	</body>
+</html>

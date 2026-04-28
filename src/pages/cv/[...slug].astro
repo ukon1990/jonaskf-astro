@@ -1,21 +1,15 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
-import CvEntry from '../../layouts/CvEntry.astro';
+import LocaleRedirect from '../../components/LocaleRedirect.astro';
+import { getCollection } from 'astro:content';
+import { slugFromCvEntryId } from '../../lib/i18n';
 
 export async function getStaticPaths() {
 	const entries = await getCollection('cv');
-	return entries.map((entry) => ({
-		params: { slug: entry.id },
-		props: entry,
-	}));
+	const slugs = Array.from(new Set(entries.map((entry) => slugFromCvEntryId(entry.id))));
+	return slugs.map((slug) => ({ params: { slug } }));
 }
-type Props = CollectionEntry<'cv'>;
 
-const entry = Astro.props;
-const { Content } = await render(entry);
+const slug = Astro.params.slug;
 ---
 
-
-<CvEntry {...entry.data}>
-	<Content />
-</CvEntry>
+<LocaleRedirect path={`/cv/${slug}`} />

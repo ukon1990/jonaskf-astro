@@ -10,12 +10,14 @@ import {
 	getTechMeta,
 } from '../data/tech';
 import type { AssignableTechSlug, TechCategory, TechSlug } from '../data/tech';
+import { formatPeriod, ui, type Locale } from '../lib/i18n';
 
 export type CvEntryData = CollectionEntry<'cv'>['data'];
 
 type Props = CvEntryData;
 
 const {
+	locale,
 	title,
 	role,
 	employer,
@@ -31,6 +33,7 @@ const {
 	link,
 	sourceLink,
 } = Astro.props;
+const labels = ui[locale as Locale].cv;
 
 type GroupedTechChild = {
 	slug: AssignableTechSlug;
@@ -157,22 +160,15 @@ const groupedTech: GroupedTech = (() => {
 
 const hasHeroImage = Boolean(heroImage);
 
-const formatPeriod = (start: Date, end?: Date | null) => {
-	const formatter = new Intl.DateTimeFormat('en', {
-		year: 'numeric',
-		month: 'short',
-	});
-	const startLabel = formatter.format(start);
-	const endLabel = end ? formatter.format(end) : 'Present';
-	return `${startLabel} – ${endLabel}`;
-};
+const periodLabel = formatPeriod(startDate, endDate, locale as Locale);
 ---
 
-<html lang="en">
+<html lang={locale}>
 	<head>
 		<BaseHead
 			title={`${title}${customer ? ` — ${customer}` : ''}`}
 			description={summary}
+			locale={locale as Locale}
 		/>
 		<style>
 			main {
@@ -318,7 +314,7 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 		</style>
 	</head>
 	<body>
-		<Header />
+		<Header locale={locale as Locale} />
 			<main>
 				<article class:list={['entry', { 'entry--with-hero': hasHeroImage, 'entry--no-hero': !hasHeroImage }]}
 				>
@@ -337,7 +333,7 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 								{ ' · ' }
 							</>
 						)}
-						{formatPeriod(startDate, endDate)}
+						{periodLabel}
 					</p>
 					<h1>{title}</h1>
 					<p class="role">
@@ -345,23 +341,23 @@ const formatPeriod = (start: Date, end?: Date | null) => {
 						{employer && ` · ${employer}`}
 					</p>
 					<p class="meta capacity">
-						{capacity === 'hobby' ? 'Hobby project' : 'Professional engagement'}
+						{capacity === 'hobby' ? labels.hobby : labels.professional}
 					</p>
 					{location && <p class="location">{location}</p>}
 					<p class="summary">{summary}</p>
 					{link && (
 						<p class="link">
-							<a href={link} target="_blank" rel="noreferrer">Visit project ↗</a>
+							<a href={link} target="_blank" rel="noreferrer">{labels.visitProject} ↗</a>
 						</p>
 					)}
 					{sourceLink && (
 						<p class="link">
-							<a href={sourceLink} target="_blank" rel="noreferrer">View source on GitHub ↗</a>
+							<a href={sourceLink} target="_blank" rel="noreferrer">{labels.viewSource} ↗</a>
 						</p>
 					)}
 					{groupedTech.length > 0 && (
 						<section class="tech-summary" aria-labelledby="tech-stack-heading">
-							<h2 id="tech-stack-heading">Tech &amp; tooling</h2>
+							<h2 id="tech-stack-heading">{labels.techStack}</h2>
 							<div class="tech-groups">
 								{groupedTech.map((group) => (
 									<div class="tech-group">

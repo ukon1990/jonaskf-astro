@@ -1,5 +1,4 @@
 ---
-import LocaleRedirect from '../../components/LocaleRedirect.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -8,6 +7,5 @@ export async function getStaticPaths() {
 }
 
 const slug = Astro.params.slug;
+return Astro.redirect(`/en/blog/${slug}`, 307);
 ---
-
-<LocaleRedirect path={`/blog/${slug}`} />
