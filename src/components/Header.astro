@@ -25,67 +25,83 @@ const showBlog = locale === 'en' && hasPublishedPosts;
 ---
 
 <header>
-  <nav class="flex-between">
-    <h2><a href={localizePath('/', locale)}>{SITE_TITLE}</a></h2>
-    <div class="internal-links flex-wrap">
-      <HeaderLink href={localizePath('/', locale)}>{labels.nav.home}</HeaderLink>
-      <HeaderLink href={localizePath('/cv', locale)}>{labels.nav.cv}</HeaderLink>
-      {showBlog && <HeaderLink href="/en/blog">{labels.nav.blog}</HeaderLink>}
-    </div>
-    <div class="header-actions">
-      <SocialLinks class="header-social-links" />
-      <div class="language-switcher" aria-label="Language">
-        {
-          locales.map((targetLocale) => (
-            <a
-              href={switchLocalePath(Astro.url.pathname, targetLocale)}
-              aria-current={targetLocale === locale ? 'true' : undefined}
-              title={localeLabels[targetLocale]}
-            >
-              {localeShortLabels[targetLocale]}
-            </a>
-          ))
-        }
-      </div>
+  <nav class="site-nav" data-nav-root data-open="false">
+    <div class="nav-primary">
+      <h2><a href={localizePath('/', locale)}>{SITE_TITLE}</a></h2>
       <button
         type="button"
-        class="btn-icon theme-toggle"
-        data-theme-toggle
-        aria-pressed="false"
-        aria-label="Toggle theme"
+        class="btn-icon menu-toggle"
+        data-nav-toggle
+        aria-controls="site-nav-content"
+        aria-expanded="false"
+        aria-label={locale === 'no' ? 'Åpne meny' : 'Open menu'}
       >
-        <span class="icon icon--animated theme-icon theme-icon--sun" aria-hidden="true">
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="12" cy="12" r="5"></circle>
-            <path
-              d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
-            ></path>
-          </svg>
-        </span>
-        <span class="icon icon--animated theme-icon theme-icon--moon" aria-hidden="true">
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </span>
+        <span class="menu-toggle__line" aria-hidden="true"></span>
+        <span class="menu-toggle__line" aria-hidden="true"></span>
+        <span class="menu-toggle__line" aria-hidden="true"></span>
       </button>
+    </div>
+    <div class="nav-content" id="site-nav-content" data-nav-content>
+      <div class="internal-links flex-wrap">
+        <HeaderLink href={localizePath('/', locale)}>{labels.nav.home}</HeaderLink>
+        <HeaderLink href={localizePath('/cv', locale)}>{labels.nav.cv}</HeaderLink>
+        {showBlog && <HeaderLink href="/en/blog">{labels.nav.blog}</HeaderLink>}
+      </div>
+      <div class="header-actions">
+        <SocialLinks class="header-social-links" />
+        <div class="language-switcher" aria-label="Language">
+          {
+            locales.map((targetLocale) => (
+              <a
+                href={switchLocalePath(Astro.url.pathname, targetLocale)}
+                aria-current={targetLocale === locale ? 'true' : undefined}
+                title={localeLabels[targetLocale]}
+              >
+                {localeShortLabels[targetLocale]}
+              </a>
+            ))
+          }
+        </div>
+        <button
+          type="button"
+          class="btn-icon theme-toggle"
+          data-theme-toggle
+          aria-pressed="false"
+          aria-label="Toggle theme"
+        >
+          <span class="icon icon--animated theme-icon theme-icon--sun" aria-hidden="true">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="5"></circle>
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              ></path>
+            </svg>
+          </span>
+          <span class="icon icon--animated theme-icon theme-icon--moon" aria-hidden="true">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </span>
+        </button>
+      </div>
     </div>
   </nav>
 </header>
@@ -114,15 +130,64 @@ const showBlog = locale === 'en' && hasPublishedPosts;
     text-decoration: none;
   }
 
-  nav {
+  .site-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 1.5rem;
     min-height: 4.75rem;
     width: min(100%, 1180px);
     margin: 0 auto;
   }
 
+  .nav-primary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: auto;
+  }
+
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 0.2rem;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.35rem;
+    min-height: 2.35rem;
+  }
+
+  .menu-toggle__line {
+    width: 1rem;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transition: transform 180ms ease, opacity 180ms ease;
+  }
+
+  .site-nav[data-open='true'] .menu-toggle__line:nth-child(1) {
+    transform: translateY(0.3rem) rotate(45deg);
+  }
+
+  .site-nav[data-open='true'] .menu-toggle__line:nth-child(2) {
+    opacity: 0;
+  }
+
+  .site-nav[data-open='true'] .menu-toggle__line:nth-child(3) {
+    transform: translateY(-0.3rem) rotate(-45deg);
+  }
+
+  .nav-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex: 1;
+  }
+
   .internal-links {
     gap: 1.3rem;
+    flex-wrap: wrap;
   }
 
   .internal-links :global(a) {
@@ -151,6 +216,7 @@ const showBlog = locale === 'en' && hasPublishedPosts;
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-left: auto;
   }
 
   .language-switcher {
@@ -214,56 +280,98 @@ const showBlog = locale === 'en' && hasPublishedPosts;
     transform: rotate(0deg);
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
     header {
       padding: 0 1rem;
     }
 
-    nav {
-      gap: 1rem;
+    .site-nav {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.45rem;
       min-height: 3.5rem;
+      padding: 0.6rem 0;
+    }
+
+    .nav-primary {
+      width: 100%;
+    }
+
+    .menu-toggle {
+      display: inline-flex;
+    }
+
+    .nav-content {
+      display: none;
+      width: 100%;
+      padding: 0.8rem 0;
+      border-top: 1px solid var(--border-color);
+      gap: 0.9rem;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .site-nav[data-open='true'] .nav-content {
+      display: flex;
     }
 
     .internal-links {
-      gap: 0.5rem;
+      width: 100%;
+      gap: 0.4rem;
+      flex-direction: column;
+      align-items: stretch;
     }
 
     .internal-links :global(a) {
-      padding: 0.6rem 0.1rem;
-      font-size: 0.68rem;
+      width: 100%;
+      padding: 0.72rem 0.1rem;
+      font-size: 0.7rem;
     }
 
     .header-actions {
+      width: 100%;
+      justify-content: flex-start;
+      flex-wrap: wrap;
       gap: 0.75rem;
+      margin-left: 0;
     }
 
     .header-social-links {
       gap: 0.75rem;
     }
   }
-
-  @media (max-width: 480px) {
-    nav {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.75rem;
-      padding: 0.75rem 0;
-    }
-
-    .internal-links {
-      order: 2;
-      width: 100%;
-      justify-content: flex-start;
-    }
-
-    .header-actions {
-      order: 3;
-      width: 100%;
-      justify-content: space-between;
-    }
-
-    h2 {
-      order: 1;
-    }
-  }
 </style>
+<script>
+  (() => {
+    const nav = document.querySelector<HTMLElement>('[data-nav-root]');
+    const toggle = nav?.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+    if (!nav || !toggle) return;
+
+    const closeLabel = toggle.getAttribute('aria-label') === 'Åpne meny' ? 'Lukk meny' : 'Close menu';
+    const openLabel = toggle.getAttribute('aria-label') || 'Open menu';
+    const mobileQuery = window.matchMedia('(max-width: 900px)');
+
+    const setOpen = (nextOpen: boolean) => {
+      nav.dataset.open = nextOpen ? 'true' : 'false';
+      toggle.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+      toggle.setAttribute('aria-label', nextOpen ? closeLabel : openLabel);
+    };
+
+    const syncViewport = () => {
+      if (!mobileQuery.matches) {
+        setOpen(false);
+      }
+    };
+
+    setOpen(false);
+    syncViewport();
+    toggle.addEventListener('click', () => setOpen(nav.dataset.open !== 'true'));
+    mobileQuery.addEventListener('change', syncViewport);
+
+    nav.querySelectorAll('.internal-links a').forEach((link) => {
+      link.addEventListener('click', () => {
+        if (mobileQuery.matches) setOpen(false);
+      });
+    });
+  })();
+</script>

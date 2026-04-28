@@ -1,17 +1,30 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
+import { normalizePath, stripLocale } from '../lib/i18n';
 
 type Props = HTMLAttributes<'a'>;
 
 const { href, class: className, ...props } = Astro.props;
-const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
-const subpath = pathname.match(/[^/]+/g);
-const hrefPath = href?.toString().replace(/\/$/, '') || '/';
-const currentPath = pathname.replace(/\/$/, '') || '/';
-const isActive =
-  hrefPath === currentPath ||
-  (hrefPath !== '/' && currentPath.startsWith(`${hrefPath}/`)) ||
-  hrefPath === '/' + (subpath?.[0] || '');
+
+const sectionRoutes = ['/cv', '/blog'];
+
+const toTopLevelSection = (path: string): string => {
+  // Normalize and strip locale so `/no/cv/slug` and `/en/cv/slug`
+  // both resolve to `/cv`.
+  const normalized = normalizePath(path);
+  const parts = stripLocale(normalized).split('/').filter(Boolean);
+  return parts[0] ? `/${parts[0]}` : '/';
+};
+
+const currentSection = toTopLevelSection(Astro.url.pathname);
+const hrefValue = href?.toString() || '/';
+const hrefPath = new URL(hrefValue, Astro.url).pathname;
+const targetSection = toTopLevelSection(hrefPath);
+const isHomeLink = targetSection === '/';
+
+const isActive = isHomeLink
+  ? currentSection === '/' || !sectionRoutes.includes(currentSection)
+  : currentSection === targetSection;
 ---
 
 <a href={href} class:list={[className, { active: isActive }]} {...props}>
