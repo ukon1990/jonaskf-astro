@@ -4,57 +4,57 @@ import type { AssignableTechSlug } from '../data/tech';
 import { ui, type Locale } from '../lib/i18n';
 
 interface CapacityOption {
-	value: string;
-	label: string;
+  value: string;
+  label: string;
 }
 
 interface TechFilterOption {
-	tech: AssignableTechSlug;
-	label: string;
-	count: number;
-	groupId: string;
-	groupLabel: string;
+  tech: AssignableTechSlug;
+  label: string;
+  count: number;
+  groupId: string;
+  groupLabel: string;
 }
 
 interface TechFilterGroup {
-	id: string;
-	label: string;
-	techCount: number;
-	techCountLabel: string;
-	options: TechFilterOption[];
+  id: string;
+  label: string;
+  techCount: number;
+  techCountLabel: string;
+  options: TechFilterOption[];
 }
 
 interface Props {
-	capacityOptions: CapacityOption[];
-	techFilters: TechFilterOption[];
-	locale: Locale;
+  capacityOptions: CapacityOption[];
+  techFilters: TechFilterOption[];
+  locale: Locale;
 }
 
 const { capacityOptions, techFilters, locale } = Astro.props;
 const labels = ui[locale].cv;
 
 const formatTechnologyCount = (count: number) =>
-	`${count} ${count === 1 ? labels.technologySingular : labels.technologyPlural}`;
+  `${count} ${count === 1 ? labels.technologySingular : labels.technologyPlural}`;
 
 const buildTechGroups = (filters: TechFilterOption[]): TechFilterGroup[] => {
-	const groups = new Map<string, TechFilterGroup>();
-	for (const filter of filters) {
-		const existing = groups.get(filter.groupId);
-		if (existing) {
-			existing.options.push(filter);
-			existing.techCount += 1;
-			existing.techCountLabel = formatTechnologyCount(existing.techCount);
-			continue;
-		}
-		groups.set(filter.groupId, {
-			id: filter.groupId,
-			label: filter.groupLabel,
-			techCount: 1,
-			techCountLabel: formatTechnologyCount(1),
-			options: [filter],
-		});
-	}
-	return Array.from(groups.values()).sort((a, b) => a.label.localeCompare(b.label));
+  const groups = new Map<string, TechFilterGroup>();
+  for (const filter of filters) {
+    const existing = groups.get(filter.groupId);
+    if (existing) {
+      existing.options.push(filter);
+      existing.techCount += 1;
+      existing.techCountLabel = formatTechnologyCount(existing.techCount);
+      continue;
+    }
+    groups.set(filter.groupId, {
+      id: filter.groupId,
+      label: filter.groupLabel,
+      techCount: 1,
+      techCountLabel: formatTechnologyCount(1),
+      options: [filter],
+    });
+  }
+  return Array.from(groups.values()).sort((a, b) => a.label.localeCompare(b.label));
 };
 
 const techFilterGroups = buildTechGroups(techFilters);
@@ -63,55 +63,169 @@ const hasCapacityFilter = capacityOptions.length > 0;
 const hasTechFilter = techFilterGroups.length > 0;
 ---
 
-{(hasCapacityFilter || hasTechFilter) && (
-	<form class="filters" id="experience-filters">
-		<header class="filters-header">
-			<h2>{labels.filterTitle}</h2>
-			<button type="reset" class="btn-reset">{labels.clearFilters}</button>
-		</header>
-		<div class="filters-body grid-auto-fit--sm">
-			{hasCapacityFilter && (
-				<label class="filters-select">
-					<span>{labels.capacity}</span>
-					<select name="capacity" class="select">
-						<option value="all">{labels.allCapacities}</option>
-						{capacityOptions.map((option) => (
-							<option value={option.value}>{option.label}</option>
-						))}
-					</select>
-				</label>
-			)}
-			{hasTechFilter && (
-				<fieldset class="filters-select filters-select--tech">
-					<legend>{labels.tech}</legend>
-					<div class="tech-accordion">
-						{techFilterGroups.map((group, index) => (
-							<details
-								class="tech-group"
-								data-role="tech-group"
-								data-group={group.id}
-								data-default-open={index === 0 ? 'true' : 'false'}
-								open={index === 0}
-							>
-									<summary>
-										<span class="tech-group-title">{group.label}</span>
-										<span class="tech-group-count">{group.techCountLabel}</span>
-								</summary>
-								<div class="tech-options">
-									{group.options.map((filter) => (
-										<FilterCheckbox
-											name="tech"
-											value={filter.tech}
-											label={filter.label}
-											class="tech-filter"
-										/>
-									))}
-								</div>
-							</details>
-						))}
-					</div>
-				</fieldset>
-			)}
-		</div>
-	</form>
-)}
+{
+  (hasCapacityFilter || hasTechFilter) && (
+    <form class="filters" id="experience-filters">
+      <header class="filters-header">
+        <h2>{labels.filterTitle}</h2>
+        <button type="reset" class="btn-reset">
+          {labels.clearFilters}
+        </button>
+      </header>
+      <div class="filters-body grid-auto-fit--sm">
+        {hasCapacityFilter && (
+          <label class="filters-select">
+            <span>{labels.capacity}</span>
+            <select name="capacity" class="select">
+              <option value="all">{labels.allCapacities}</option>
+              {capacityOptions.map((option) => (
+                <option value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </label>
+        )}
+        {hasTechFilter && (
+          <fieldset class="filters-select filters-select--tech">
+            <legend>{labels.tech}</legend>
+            <div class="tech-accordion">
+              {techFilterGroups.map((group, index) => (
+                <details
+                  class="tech-group"
+                  data-role="tech-group"
+                  data-group={group.id}
+                  data-default-open={index === 0 ? 'true' : 'false'}
+                  open={index === 0}
+                >
+                  <summary>
+                    <span class="tech-group-title">{group.label}</span>
+                    <span class="tech-group-count">{group.techCountLabel}</span>
+                  </summary>
+                  <div class="tech-options">
+                    {group.options.map((filter) => (
+                      <FilterCheckbox
+                        name="tech"
+                        value={filter.tech}
+                        label={filter.label}
+                        class="tech-filter"
+                      />
+                    ))}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </fieldset>
+        )}
+      </div>
+    </form>
+  )
+}
+<style>
+  .filters {
+    display: grid;
+    gap: 1.75rem;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--card-background);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+  }
+  .filters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .filters-header h2 {
+    margin: 0;
+    font-size: 1rem;
+    color: rgb(var(--black));
+  }
+  .filters-body {
+    display: grid;
+    align-items: start;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .filters-select {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  fieldset.filters-select {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .filters-select span,
+  .filters-select legend {
+    font-family: 'Work Sans', 'Manrope', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgb(var(--gray));
+  }
+  .tech-accordion {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .tech-group {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--surface-low);
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .tech-group[open] {
+    border-color: var(--border-color-strong);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+  .tech-group summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    font-family: 'Work Sans', 'Manrope', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgb(var(--black));
+    list-style: none;
+  }
+  .tech-group summary::-webkit-details-marker {
+    display: none;
+  }
+  .tech-group summary:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+    outline-offset: 2px;
+  }
+  .tech-group-title {
+    flex: 1;
+  }
+  .tech-group-count {
+    font-size: 0.68rem;
+    color: rgb(var(--gray));
+    font-weight: 700;
+  }
+  .tech-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0 1rem 1rem;
+  }
+  @media (max-width: 720px) {
+    .filters {
+      padding: 1.35rem;
+    }
+    .filters-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

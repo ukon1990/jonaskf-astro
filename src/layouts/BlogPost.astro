@@ -13,73 +13,78 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 ---
 
 <html lang="en">
-	<head>
-		<BaseHead title={title} description={description} locale="en" alternateLocales={['en']} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				margin: 0 auto;
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
-	</head>
+  <head>
+    <BaseHead title={title} description={description} locale="en" alternateLocales={['en']} />
+    <style>
+      main {
+        width: calc(100% - 2em);
+        max-width: 100%;
+        margin: 0;
+        padding: 0 0 6rem;
+      }
+      .hero-image {
+        width: min(100% - 2rem, 1040px);
+        margin: 4rem auto 0;
+      }
+      .hero-image img {
+        margin: 0 auto;
+        display: block;
+        width: 100%;
+      }
+      .prose {
+        width: 760px;
+        max-width: calc(100% - 2em);
+        margin: auto;
+        padding: 5rem 1rem 0;
+        color: rgb(var(--gray-dark));
+      }
+      .title {
+        margin-bottom: 3rem;
+        padding: 0 0 2rem;
+        text-align: left;
+        line-height: 1;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .title h1 {
+        margin: 0 0 1.5rem 0;
+      }
+      .date {
+        margin-bottom: 1rem;
+        color: rgb(var(--gray));
+      }
+      .last-updated-on {
+        margin-top: 0.4rem;
+      }
+    </style>
+  </head>
 
-	<body>
-		<Header locale="en" />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt={title} />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<Tags tags={tags} />
-						<hr />
-					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
+  <body>
+    <Header locale="en" />
+    <main>
+      <article>
+        <div class="hero-image">
+          {heroImage && <Image width={1020} height={510} src={heroImage} alt={title} />}
+        </div>
+        <div class="prose">
+          <div class="title">
+            <div class="date">
+              <FormattedDate date={pubDate} />
+              {
+                updatedDate && (
+                  <div class="last-updated-on">
+                    Last updated on <FormattedDate date={updatedDate} />
+                  </div>
+                )
+              }
+            </div>
+            <h1>{title}</h1>
+            <Tags tags={tags} />
+            <hr />
+          </div>
+          <slot />
+        </div>
+      </article>
+    </main>
+    <Footer />
+  </body>
 </html>

@@ -8,16 +8,22 @@ import { SITE_TITLE } from '../consts';
 import { locales, localizePath, stripLocale, type Locale } from '../lib/i18n';
 
 interface Props {
-	title: string;
-	description: string;
-	image?: ImageMetadata;
-	locale?: Locale;
-	alternateLocales?: Locale[];
+  title: string;
+  description: string;
+  image?: ImageMetadata;
+  locale?: Locale;
+  alternateLocales?: Locale[];
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = FallbackImage, locale, alternateLocales = [...locales] } = Astro.props;
+const {
+  title,
+  description,
+  image = FallbackImage,
+  locale,
+  alternateLocales = [...locales],
+} = Astro.props;
 const unlocalizedPath = stripLocale(Astro.url.pathname);
 ---
 
@@ -27,26 +33,33 @@ const unlocalizedPath = stripLocale(Astro.url.pathname);
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link
-	rel="alternate"
-	type="application/rss+xml"
-	title={SITE_TITLE}
-	href={new URL('rss.xml', Astro.site)}
+  rel="alternate"
+  type="application/rss+xml"
+  title={SITE_TITLE}
+  href={new URL('rss.xml', Astro.site)}
 />
 <meta name="generator" content={Astro.generator} />
 
-<!-- Font preloads -->
-<link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />
-<link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin />
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Work+Sans:wght@600;700&display=swap"
+  rel="stylesheet"
+/>
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
-{locale && alternateLocales.map((targetLocale) => (
-	<link
-		rel="alternate"
-		hreflang={targetLocale}
-		href={new URL(localizePath(unlocalizedPath, targetLocale), Astro.site)}
-	/>
-))}
+{
+  locale &&
+    alternateLocales.map((targetLocale) => (
+      <link
+        rel="alternate"
+        hreflang={targetLocale}
+        href={new URL(localizePath(unlocalizedPath, targetLocale), Astro.site)}
+      />
+    ))
+}
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
@@ -68,90 +81,93 @@ const unlocalizedPath = stripLocale(Astro.url.pathname);
 <meta property="twitter:image" content={new URL(image.src, Astro.url)} />
 
 <script is:inline>
-	(() => {
-		const root = document.documentElement;
-		let activeTheme = '';
-		let overrideTheme = '';
-		let lastTimeTheme = '';
-		let toggleInitialized = false;
-		const pickTimeTheme = () => {
-			const hour = new Date().getHours();
-			return hour >= 7 && hour < 20 ? 'light' : 'dark';
-		};
-		const updateToggle = () => {
-			const toggle = document.querySelector('[data-theme-toggle]');
-			if (!toggle) {
-				return;
-			}
-			const targetLabel = activeTheme === 'light' ? 'Switch to dark theme' : 'Switch to light theme';
-			toggle.setAttribute('aria-label', targetLabel);
-			toggle.setAttribute('aria-pressed', overrideTheme ? 'true' : 'false');
-		};
-		const applyTheme = () => {
-			const timeTheme = pickTimeTheme();
-			if (timeTheme !== lastTimeTheme) {
-				lastTimeTheme = timeTheme;
-				overrideTheme = '';
-			}
-			const nextTheme = overrideTheme || timeTheme;
-			if (nextTheme !== activeTheme) {
-				activeTheme = nextTheme;
-				root.dataset.theme = nextTheme;
-			}
-			updateToggle();
-		};
-		const toggleOverride = () => {
-			if (overrideTheme) {
-				overrideTheme = '';
-			} else {
-				overrideTheme = activeTheme === 'light' ? 'dark' : 'light';
-				if (overrideTheme === pickTimeTheme()) {
-					overrideTheme = '';
-				}
-			}
-			applyTheme();
-		};
-		const scheduleNextCheck = () => {
-			const now = new Date();
-			const msUntilNextMinute =
-				60000 - now.getSeconds() * 1000 - now.getMilliseconds();
-			window.setTimeout(() => {
-				applyTheme();
-				scheduleNextCheck();
-			}, Math.max(msUntilNextMinute, 1000));
-		};
-		const setupToggle = () => {
-			if (toggleInitialized) {
-				updateToggle();
-				return;
-			}
-			const toggle = document.querySelector('[data-theme-toggle]');
-			if (!toggle) {
-				return;
-			}
-			toggleInitialized = true;
-			toggle.addEventListener('click', (event) => {
-				event.preventDefault();
-				toggleOverride();
-			});
-			updateToggle();
-		};
-		const boot = () => {
-			applyTheme();
-			scheduleNextCheck();
-			setupToggle();
-		};
-		if (document.readyState === 'loading') {
-			document.addEventListener('DOMContentLoaded', () => {
-				setupToggle();
-			});
-		}
-		boot();
-		document.addEventListener('visibilitychange', () => {
-			if (!document.hidden) {
-				applyTheme();
-			}
-		});
-		window.addEventListener('focus', applyTheme);
-	})();
+  (() => {
+    const root = document.documentElement;
+    let activeTheme = '';
+    let overrideTheme = '';
+    let lastTimeTheme = '';
+    let toggleInitialized = false;
+    const pickTimeTheme = () => {
+      const hour = new Date().getHours();
+      return hour >= 7 && hour < 20 ? 'light' : 'dark';
+    };
+    const updateToggle = () => {
+      const toggle = document.querySelector('[data-theme-toggle]');
+      if (!toggle) {
+        return;
+      }
+      const targetLabel =
+        activeTheme === 'light' ? 'Switch to dark theme' : 'Switch to light theme';
+      toggle.setAttribute('aria-label', targetLabel);
+      toggle.setAttribute('aria-pressed', overrideTheme ? 'true' : 'false');
+    };
+    const applyTheme = () => {
+      const timeTheme = pickTimeTheme();
+      if (timeTheme !== lastTimeTheme) {
+        lastTimeTheme = timeTheme;
+        overrideTheme = '';
+      }
+      const nextTheme = overrideTheme || timeTheme;
+      if (nextTheme !== activeTheme) {
+        activeTheme = nextTheme;
+        root.dataset.theme = nextTheme;
+      }
+      updateToggle();
+    };
+    const toggleOverride = () => {
+      if (overrideTheme) {
+        overrideTheme = '';
+      } else {
+        overrideTheme = activeTheme === 'light' ? 'dark' : 'light';
+        if (overrideTheme === pickTimeTheme()) {
+          overrideTheme = '';
+        }
+      }
+      applyTheme();
+    };
+    const scheduleNextCheck = () => {
+      const now = new Date();
+      const msUntilNextMinute = 60000 - now.getSeconds() * 1000 - now.getMilliseconds();
+      window.setTimeout(
+        () => {
+          applyTheme();
+          scheduleNextCheck();
+        },
+        Math.max(msUntilNextMinute, 1000),
+      );
+    };
+    const setupToggle = () => {
+      if (toggleInitialized) {
+        updateToggle();
+        return;
+      }
+      const toggle = document.querySelector('[data-theme-toggle]');
+      if (!toggle) {
+        return;
+      }
+      toggleInitialized = true;
+      toggle.addEventListener('click', (event) => {
+        event.preventDefault();
+        toggleOverride();
+      });
+      updateToggle();
+    };
+    const boot = () => {
+      applyTheme();
+      scheduleNextCheck();
+      setupToggle();
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setupToggle();
+      });
+    }
+    boot();
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        applyTheme();
+      }
+    });
+    window.addEventListener('focus', applyTheme);
+  })();
 </script>

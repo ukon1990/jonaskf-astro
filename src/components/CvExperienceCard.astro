@@ -7,61 +7,144 @@ import { formatPeriod, localizePath, slugFromCvEntryId, ui, type Locale } from '
 type CvEntry = CollectionEntry<'cv'>;
 
 interface Props {
-	experience: CvEntry;
-	variant: 'highlight' | 'list';
-	locale: Locale;
+  experience: CvEntry;
+  variant: 'highlight' | 'list';
+  locale: Locale;
 }
 
 const { experience, variant, locale } = Astro.props;
 const capacity = experience.data.capacity ?? 'professional';
 const isHighlight = variant === 'highlight';
 const dataEntry = isHighlight ? 'featured' : 'experience';
-const cardClass = isHighlight ? 'card card--featured' : 'card';
+const cardClass = isHighlight
+  ? 'card experience-card experience-card--featured'
+  : 'card experience-card';
 const capacityLabel = capacity === 'hobby' ? ui[locale].cv.hobby : ui[locale].cv.professional;
 const periodLabel = formatPeriod(experience.data.startDate, experience.data.endDate, locale);
 const techTags = experience.data.tech ?? [];
 const showHeroImage = isHighlight && experience.data.heroImage;
 const href = localizePath(`/cv/${slugFromCvEntryId(experience.id)}`, locale);
+const techLabels = techTags.map((tag) => getTechDisplayName(tag));
+const searchIndex = [
+  experience.data.title,
+  experience.data.customer,
+  experience.data.role,
+  experience.data.employer,
+  experience.data.location,
+  capacityLabel,
+  experience.data.summary,
+  ...techLabels,
+]
+  .filter(Boolean)
+  .join(' ')
+  .toLowerCase();
 ---
 
 <article
-	class={cardClass}
-	data-entry={dataEntry}
-	data-capacity={capacity}
-	data-tech={techTags.join('|')}
+  class={cardClass}
+  data-entry={dataEntry}
+  data-capacity={capacity}
+  data-tech={techTags.join('|')}
+  data-search-index={searchIndex}
 >
-	<a class="card-link" href={href}>
-		{showHeroImage && (
-			<div class="hero-image card-hero-image">
-				<Image
-					width={960}
-					height={540}
-					src={experience.data.heroImage}
-					alt={experience.data.title}
-				/>
-			</div>
-		)}
-		<h2>{experience.data.title}</h2>
-		<p class="meta">
-			{experience.data.customer && <span>{experience.data.customer}</span>}
-			{experience.data.customer && ' · '}
-			{periodLabel}
-		</p>
-		<p class="role">
-			{experience.data.role}
-			{experience.data.employer && ` · ${experience.data.employer}`}
-		</p>
-		{experience.data.location && (
-			<p class="meta location">{experience.data.location}</p>
-		)}
-		<p class="meta">{capacityLabel}</p>
-		<p class="summary">{experience.data.summary}</p>
-		{techTags.length > 0 && (
-			<ul class="tags">
-				{techTags.map((tag) => (
-					<li>{getTechDisplayName(tag)}</li>
-				))}
-			</ul>
-		)}
-	</a>
+  <a class="card-link" href={href}>
+    {
+      showHeroImage && (
+        <div class="hero-image card-hero-image">
+          <Image
+            width={960}
+            height={540}
+            src={experience.data.heroImage}
+            alt={experience.data.title}
+          />
+        </div>
+      )
+    }
+    <h2>{experience.data.title}</h2>
+    <p class="meta">
+      {experience.data.customer && <span>{experience.data.customer}</span>}
+      {experience.data.customer && ' · '}
+      {periodLabel}
+    </p>
+    <p class="role">
+      {experience.data.role}
+      {experience.data.employer && ` · ${experience.data.employer}`}
+    </p>
+    {experience.data.location && <p class="meta location">{experience.data.location}</p>}
+    <p class="meta">{capacityLabel}</p>
+    <p class="summary">{experience.data.summary}</p>
+    {
+      techTags.length > 0 && (
+        <ul class="tags">
+          {techLabels.map((tag) => (
+            <li>{tag}</li>
+          ))}
+        </ul>
+      )
+    }
+  </a>
 </article>
+<style>
+  .experience-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 100%;
+    box-shadow: none;
+  }
+  .experience-card .card-link {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+  }
+  .experience-card--featured {
+    padding: 0;
+  }
+  .experience-card--featured .card-link {
+    padding: 2rem;
+  }
+  .experience-card h2 {
+    margin-bottom: 1rem;
+    font-size: 1.65rem;
+    line-height: 1.15;
+  }
+  .card-hero-image {
+    margin: -2rem -2rem 1.5rem;
+    border-radius: 16px 16px 0 0;
+    border-width: 0 0 1px;
+    box-shadow: none;
+  }
+  .card-hero-image :global(img) {
+    display: block;
+    width: 100%;
+    transition: transform 0.35s ease;
+  }
+  .experience-card:hover .card-hero-image :global(img) {
+    transform: scale(1.025);
+  }
+  .role,
+  .location,
+  .summary {
+    color: rgb(var(--gray));
+  }
+  .role {
+    margin: 1rem 0 0;
+    font-weight: 500;
+  }
+  .location {
+    margin-top: 0.35rem;
+  }
+  .summary {
+    margin: 1.25rem 0 1.5rem;
+  }
+  .tags {
+    margin-top: auto;
+  }
+  @media (max-width: 720px) {
+    .experience-card--featured .card-link {
+      padding: 1.35rem;
+    }
+    .card-hero-image {
+      margin: -1.35rem -1.35rem 1.25rem;
+    }
+  }
+</style>

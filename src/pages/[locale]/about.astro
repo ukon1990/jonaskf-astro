@@ -6,15 +6,15 @@ import { SITE_TITLE } from '../../consts';
 import { getLocaleFromParams, ui, type Locale } from '../../lib/i18n';
 
 export function getStaticPaths() {
-	return [{ params: { locale: 'no' } }, { params: { locale: 'en' } }];
+  return [{ params: { locale: 'no' } }, { params: { locale: 'en' } }];
 }
 
 const locale = getLocaleFromParams(Astro.params);
 const title = locale === 'no' ? `Om ${SITE_TITLE}` : `Working with ${SITE_TITLE}`;
 const description =
-	locale === 'no'
-		? 'Hvordan jeg jobber med produktutvikling og team.'
-		: 'How I approach product engineering engagements and collaborate with teams.';
+  locale === 'no'
+    ? 'Hvordan jeg jobber med produktutvikling og team.'
+    : 'How I approach product engineering engagements and collaborate with teams.';
 ---
 
 <!doctype html>
@@ -23,13 +23,17 @@ const description =
     <BaseHead title={title} description={description} locale={locale as Locale} />
     <style>
       main {
-        width: 720px;
+        width: 760px;
         max-width: calc(100% - 2rem);
         margin: 0 auto;
-        padding: 3rem 1rem 5rem 1rem;
+        padding: 5rem 1rem 7rem 1rem;
       }
       main h1 {
         margin-bottom: 1rem;
+      }
+      main p {
+        color: rgb(var(--gray));
+        font-size: 1.08rem;
       }
     </style>
   </head>

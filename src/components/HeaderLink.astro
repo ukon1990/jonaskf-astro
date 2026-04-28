@@ -9,21 +9,21 @@ const subpath = pathname.match(/[^/]+/g);
 const hrefPath = href?.toString().replace(/\/$/, '') || '/';
 const currentPath = pathname.replace(/\/$/, '') || '/';
 const isActive =
-	hrefPath === currentPath ||
-	(hrefPath !== '/' && currentPath.startsWith(`${hrefPath}/`)) ||
-	hrefPath === '/' + (subpath?.[0] || '');
+  hrefPath === currentPath ||
+  (hrefPath !== '/' && currentPath.startsWith(`${hrefPath}/`)) ||
+  hrefPath === '/' + (subpath?.[0] || '');
 ---
 
 <a href={href} class:list={[className, { active: isActive }]} {...props}>
-	<slot />
+  <slot />
 </a>
 <style>
-	a {
-		display: inline-block;
-		text-decoration: none;
-	}
-	a.active {
-		font-weight: bolder;
-		text-decoration: underline;
-	}
+  a {
+    display: inline-block;
+    text-decoration: none;
+  }
+  a.active {
+    font-weight: bolder;
+    text-decoration: none;
+  }
 </style>

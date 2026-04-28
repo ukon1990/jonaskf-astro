@@ -4,220 +4,266 @@ import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
 import SocialLinks from './SocialLinks.astro';
 import {
-	localeLabels,
-	localeShortLabels,
-	locales,
-	localizePath,
-	switchLocalePath,
-	ui,
-	type Locale,
+  localeLabels,
+  localeShortLabels,
+  locales,
+  localizePath,
+  switchLocalePath,
+  ui,
+  type Locale,
 } from '../lib/i18n';
 
 interface Props {
-	locale: Locale;
+  locale: Locale;
 }
 
 const { locale } = Astro.props;
 const labels = ui[locale];
 
-const hasPublishedPosts = (
-	await getCollection('blog', ({ data }) => !data.draft)
-).length > 0;
+const hasPublishedPosts = (await getCollection('blog', ({ data }) => !data.draft)).length > 0;
 const showBlog = locale === 'en' && hasPublishedPosts;
 ---
 
 <header>
-	<nav class="flex-between">
-		<h2><a href={localizePath('/', locale)}>{SITE_TITLE}</a></h2>
-		<div class="internal-links flex-wrap">
-			<HeaderLink href={localizePath('/', locale)}>{labels.nav.home}</HeaderLink>
-			<HeaderLink href={localizePath('/cv', locale)}>{labels.nav.cv}</HeaderLink>
-			{showBlog && <HeaderLink href="/en/blog">{labels.nav.blog}</HeaderLink>}
-		</div>
-		<div class="header-actions">
-			<SocialLinks class="header-social-links" />
-			<div class="language-switcher" aria-label="Language">
-				{locales.map((targetLocale) => (
-					<a
-						href={switchLocalePath(Astro.url.pathname, targetLocale)}
-						aria-current={targetLocale === locale ? 'true' : undefined}
-						title={localeLabels[targetLocale]}
-					>
-						{localeShortLabels[targetLocale]}
-					</a>
-				))}
-			</div>
-			<button
-				type="button"
-				class="btn-icon theme-toggle"
-				data-theme-toggle
-				aria-pressed="false"
-				aria-label="Toggle theme"
-			>
-				<span class="icon icon--animated theme-icon theme-icon--sun" aria-hidden="true">
-					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<circle cx="12" cy="12" r="5"/>
-						<path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-					</svg>
-				</span>
-				<span class="icon icon--animated theme-icon theme-icon--moon" aria-hidden="true">
-					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-					</svg>
-				</span>
-			</button>
-		</div>
-	</nav>
+  <nav class="flex-between">
+    <h2><a href={localizePath('/', locale)}>{SITE_TITLE}</a></h2>
+    <div class="internal-links flex-wrap">
+      <HeaderLink href={localizePath('/', locale)}>{labels.nav.home}</HeaderLink>
+      <HeaderLink href={localizePath('/cv', locale)}>{labels.nav.cv}</HeaderLink>
+      {showBlog && <HeaderLink href="/en/blog">{labels.nav.blog}</HeaderLink>}
+    </div>
+    <div class="header-actions">
+      <SocialLinks class="header-social-links" />
+      <div class="language-switcher" aria-label="Language">
+        {
+          locales.map((targetLocale) => (
+            <a
+              href={switchLocalePath(Astro.url.pathname, targetLocale)}
+              aria-current={targetLocale === locale ? 'true' : undefined}
+              title={localeLabels[targetLocale]}
+            >
+              {localeShortLabels[targetLocale]}
+            </a>
+          ))
+        }
+      </div>
+      <button
+        type="button"
+        class="btn-icon theme-toggle"
+        data-theme-toggle
+        aria-pressed="false"
+        aria-label="Toggle theme"
+      >
+        <span class="icon icon--animated theme-icon theme-icon--sun" aria-hidden="true">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="5"></circle>
+            <path
+              d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+            ></path>
+          </svg>
+        </span>
+        <span class="icon icon--animated theme-icon theme-icon--moon" aria-hidden="true">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </span>
+      </button>
+    </div>
+  </nav>
 </header>
 <style>
-	header {
-		margin: 0;
-		padding: 0 1em;
-		background: var(--card-background);
-		box-shadow: var(--card-shadow);
-	}
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    margin: 0;
+    padding: 0 1.5rem;
+    background: var(--header-background);
+    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
 
-	h2 {
-		margin: 0;
-		font-size: 1em;
-	}
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+    letter-spacing: 0;
+  }
 
-	h2 a,
-	h2 a.active {
-		color: rgb(var(--gray-dark));
-		text-decoration: none;
-	}
+  h2 a,
+  h2 a.active {
+    color: rgb(var(--black));
+    text-decoration: none;
+  }
 
-	nav {
-		gap: 1.5rem;
-		min-height: 4rem;
-	}
+  nav {
+    gap: 1.5rem;
+    min-height: 4.75rem;
+    width: min(100%, 1180px);
+    margin: 0 auto;
+  }
 
-	.internal-links {
-		gap: 0.5rem;
-	}
+  .internal-links {
+    gap: 1.3rem;
+  }
 
-	.internal-links :global(a) {
-		padding: 1em 0.5em;
-		color: rgb(var(--gray-dark));
-		border-bottom: 4px solid transparent;
-		text-decoration: none;
-	}
+  .internal-links :global(a) {
+    padding: 0.55rem 0.1rem;
+    color: rgb(var(--gray));
+    border-bottom: 1px solid transparent;
+    font-family: 'Work Sans', 'Manrope', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
 
-	.internal-links :global(a.active) {
-		border-bottom-color: var(--accent);
-	}
+  .internal-links :global(a:hover) {
+    color: rgb(var(--black));
+  }
 
-	.header-actions {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
+  .internal-links :global(a.active) {
+    color: rgb(var(--black));
+    border-bottom-color: currentColor;
+  }
 
-	.language-switcher {
-		display: inline-flex;
-		align-items: center;
-		border: 1px solid rgba(var(--gray), 0.2);
-		border-radius: 999px;
-		overflow: hidden;
-	}
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
 
-	.language-switcher a {
-		padding: 0.35rem 0.55rem;
-		color: rgb(var(--gray-dark));
-		font-size: 0.78rem;
-		font-weight: 700;
-		text-decoration: none;
-	}
+  .language-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.18rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--card-background) 70%, transparent);
+    overflow: hidden;
+  }
 
-	.language-switcher a[aria-current='true'] {
-		background: var(--accent);
-		color: white;
-	}
+  .language-switcher a {
+    padding: 0.42rem 0.5rem;
+    border-radius: 6px;
+    color: rgb(var(--gray));
+    font-family: 'Work Sans', 'Manrope', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-decoration: none;
+  }
 
-	.header-social-links {
-		gap: 1rem;
-	}
+  .language-switcher a[aria-current='true'] {
+    background: rgb(var(--black));
+    color: var(--card-background);
+  }
 
-	/* Theme toggle specific styles */
-	.theme-toggle {
-		position: relative;
-	}
+  .header-social-links {
+    gap: 0.8rem;
+  }
 
-	.theme-icon {
-		position: absolute;
-	}
+  /* Theme toggle specific styles */
+  .theme-toggle {
+    position: relative;
+  }
 
-	.theme-icon--sun {
-		opacity: 1;
-		transform: rotate(0deg);
-	}
+  .theme-icon {
+    position: absolute;
+  }
 
-	.theme-icon--moon {
-		opacity: 0;
-		transform: rotate(180deg);
-	}
+  .theme-icon--sun {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
 
-	.theme-toggle[aria-pressed='true'] .theme-icon--sun {
-		opacity: 0;
-		transform: rotate(-180deg);
-	}
+  .theme-icon--moon {
+    opacity: 0;
+    transform: rotate(180deg);
+  }
 
-	.theme-toggle[aria-pressed='true'] .theme-icon--moon {
-		opacity: 1;
-		transform: rotate(0deg);
-	}
+  .theme-toggle[aria-pressed='true'] .theme-icon--sun {
+    opacity: 0;
+    transform: rotate(-180deg);
+  }
 
-	@media (max-width: 720px) {
-		header {
-			padding: 0 0.75em;
-		}
+  .theme-toggle[aria-pressed='true'] .theme-icon--moon {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
 
-		nav {
-			gap: 1rem;
-			min-height: 3.5rem;
-		}
+  @media (max-width: 720px) {
+    header {
+      padding: 0 1rem;
+    }
 
-		.internal-links {
-			gap: 0.5rem;
-		}
+    nav {
+      gap: 1rem;
+      min-height: 3.5rem;
+    }
 
-		.internal-links :global(a) {
-			padding: 0.75em 0.25em;
-			font-size: 0.9rem;
-		}
+    .internal-links {
+      gap: 0.5rem;
+    }
 
-		.header-actions {
-			gap: 0.75rem;
-		}
+    .internal-links :global(a) {
+      padding: 0.6rem 0.1rem;
+      font-size: 0.68rem;
+    }
 
-		.header-social-links {
-			gap: 0.75rem;
-		}
-	}
+    .header-actions {
+      gap: 0.75rem;
+    }
 
-	@media (max-width: 480px) {
-		nav {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 0.75rem;
-			padding: 0.75rem 0;
-		}
+    .header-social-links {
+      gap: 0.75rem;
+    }
+  }
 
-		.internal-links {
-			order: 2;
-			width: 100%;
-			justify-content: flex-start;
-		}
+  @media (max-width: 480px) {
+    nav {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+    }
 
-		.header-actions {
-			order: 3;
-			width: 100%;
-			justify-content: space-between;
-		}
+    .internal-links {
+      order: 2;
+      width: 100%;
+      justify-content: flex-start;
+    }
 
-		h2 {
-			order: 1;
-		}
-	}
+    .header-actions {
+      order: 3;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    h2 {
+      order: 1;
+    }
+  }
 </style>
