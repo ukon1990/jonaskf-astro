@@ -23,6 +23,21 @@ export const ui = {
       cv: 'Erfaring',
       blog: 'Blogg',
     },
+    about: {
+      title: 'Om',
+      educationTitle: 'Utdanning',
+      certificationsTitle: 'Sertifiseringer',
+      bachelor: {
+        degree: 'Bachelor i informasjonssystemer',
+        specialization: 'Spesialisering i webutvikling',
+        institution: 'Høgskolen i Østfold',
+        period: '2013–2016',
+      },
+      showCredential: 'Vis legitimasjon',
+      issued: 'Utstedt',
+      expires: 'Utløper',
+      noCertifications: 'Ingen sertifiseringer lagt inn ennå.',
+    },
     home: {
       introTitle: 'Jonas Munthe Flønes',
       intro: [
@@ -80,6 +95,21 @@ export const ui = {
       home: 'Home',
       cv: 'Experience',
       blog: 'Blog',
+    },
+    about: {
+      title: 'About',
+      educationTitle: 'Education',
+      certificationsTitle: 'Certifications',
+      bachelor: {
+        degree: 'Bachelor’s degree in Information Systems',
+        specialization: 'Specialization in web development',
+        institution: 'University College of Østfold',
+        period: '2013–2016',
+      },
+      showCredential: 'Show credential',
+      issued: 'Issued',
+      expires: 'Expires',
+      noCertifications: 'No certifications added yet.',
     },
     home: {
       introTitle: 'Jonas Munthe Flønes',

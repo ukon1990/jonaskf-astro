@@ -3,6 +3,7 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import { SITE_TITLE } from '../../consts';
+import { certifications } from '../../data/certifications';
 import { getLocaleFromParams, ui, type Locale } from '../../lib/i18n';
 import { socialLinks } from '../../lib/socialLinks';
 
@@ -16,6 +17,12 @@ const description =
   locale === 'no'
     ? 'Hvordan jeg jobber med produktutvikling og team.'
     : 'How I approach product engineering engagements and collaborate with teams.';
+const aboutLabels = ui[locale].about;
+const monthFormatter = new Intl.DateTimeFormat(locale === 'no' ? 'nb-NO' : 'en', {
+  year: 'numeric',
+  month: 'short',
+});
+const formatMonthYear = (date: string): string => monthFormatter.format(new Date(date));
 ---
 
 <!doctype html>
@@ -36,6 +43,38 @@ const description =
         color: rgb(var(--gray));
         font-size: 1.08rem;
       }
+      .section {
+        margin-top: 2.5rem;
+      }
+      .section h2 {
+        margin-bottom: 0.75rem;
+      }
+      .education-item p,
+      .certification-item p {
+        margin: 0.35rem 0;
+      }
+      .certifications {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 1.1rem;
+      }
+      .certification-item {
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+      }
+      .certification-item h3 {
+        margin: 0 0 0.4rem 0;
+      }
+      .certification-meta {
+        font-size: 0.95rem;
+      }
+      .certification-credential-link {
+        display: inline-flex;
+        margin-top: 0.4rem;
+      }
       main a {
         color: inherit;
       }
@@ -44,7 +83,7 @@ const description =
   <body>
     <Header locale={locale as Locale} />
     <main>
-      <h1>{locale === 'no' ? 'Om' : 'About'}</h1>
+      <h1>{aboutLabels.title}</h1>
       <p>{ui[locale].siteDescription}</p>
       <p>
         {locale === 'no' ? 'Ta gjerne kontakt via ' : 'Feel free to reach out on '}
@@ -52,6 +91,50 @@ const description =
         {locale === 'no' ? ' eller ' : ' or '}
         <a href={socialLinks.github} target="_blank" rel="noreferrer">GitHub</a>.
       </p>
+      <section class="section" aria-labelledby="education-heading">
+        <h2 id="education-heading">{aboutLabels.educationTitle}</h2>
+        <article class="education-item">
+          <p><strong>{aboutLabels.bachelor.degree}</strong></p>
+          <p>{aboutLabels.bachelor.specialization}</p>
+          <p>{aboutLabels.bachelor.institution}</p>
+          <p>{aboutLabels.bachelor.period}</p>
+        </article>
+      </section>
+      <section class="section" aria-labelledby="certifications-heading">
+        <h2 id="certifications-heading">{aboutLabels.certificationsTitle}</h2>
+        {
+          certifications.length === 0 ? (
+            <p>{aboutLabels.noCertifications}</p>
+          ) : (
+            <ul class="certifications">
+              {certifications.map((certification) => (
+                <li class="certification-item">
+                  <h3>{certification.name}</h3>
+                  <p>{certification.issuer}</p>
+                  <p class="certification-meta">
+                    {aboutLabels.issued} {formatMonthYear(certification.issuedAt)}
+                    {certification.expiresAt &&
+                      ` · ${aboutLabels.expires} ${formatMonthYear(certification.expiresAt)}`}
+                  </p>
+                  {certification.verificationId && (
+                    <p class="certification-meta">ID: {certification.verificationId}</p>
+                  )}
+                  {certification.verificationUrl && (
+                    <a
+                      class="certification-credential-link"
+                      href={certification.verificationUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {aboutLabels.showCredential}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </section>
     </main>
     <Footer />
   </body>

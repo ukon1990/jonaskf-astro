@@ -32,6 +32,8 @@ const LABELS: Record<
   {
     role: string;
     summary: string;
+    education: string;
+    certifications: string;
     technologies: string;
     projects: string;
     customer: string;
@@ -42,6 +44,8 @@ const LABELS: Record<
   no: {
     role: 'Fullstack- og frontendutvikler',
     summary: 'Oppsummering',
+    education: 'Utdanning',
+    certifications: 'Sertifiseringer',
     technologies: 'Teknologier',
     projects: 'Prosjekter etter arbeidsgiver',
     customer: 'Kunde',
@@ -51,6 +55,8 @@ const LABELS: Record<
   en: {
     role: 'Full-stack and frontend developer',
     summary: 'Summary',
+    education: 'Education',
+    certifications: 'Certifications',
     technologies: 'Technologies',
     projects: 'Projects by employer',
     customer: 'Customer',
@@ -243,6 +249,136 @@ function drawSummary(state: RenderState, text: string) {
     color: COLORS.text,
   });
   state.y -= 8;
+}
+
+function formatMonthYear(date: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale === 'no' ? 'nb-NO' : 'en', {
+    year: 'numeric',
+    month: 'short',
+  }).format(new Date(date));
+}
+
+function formatCertificationPeriod(
+  certification: { issuedAt: string; expiresAt?: string },
+  locale: Locale,
+): string {
+  const issued = formatMonthYear(certification.issuedAt, locale);
+  const expires = certification.expiresAt ? formatMonthYear(certification.expiresAt, locale) : '';
+  return expires ? `${issued} - ${expires}` : issued;
+}
+
+function drawEducation(
+  state: RenderState,
+  education: {
+    degree: string;
+    specialization: string;
+    institution: string;
+    period: string;
+  },
+) {
+  const detailText = `${education.specialization} · ${education.institution}`;
+  const detailsHeight = getWrappedHeight(detailText, CONTENT_WIDTH, {
+    font: state.fontRegular,
+    size: 9.6,
+    lineHeight: 12.5,
+  });
+  const blockHeight = 16 + detailsHeight + 12;
+  ensureSpace(state, blockHeight);
+
+  drawTextAt(state, education.degree, PAGE.marginX, state.y, {
+    font: state.fontBold,
+    size: 10.2,
+    color: COLORS.text,
+  });
+  drawRightAlignedText(state, education.period, PAGE.width - PAGE.marginX, state.y, {
+    size: 8.8,
+    color: COLORS.muted,
+  });
+  state.y -= 14;
+  state.y -= drawWrappedTextAt(state, detailText, PAGE.marginX, state.y, CONTENT_WIDTH, {
+    size: 9.6,
+    lineHeight: 12.5,
+    color: COLORS.muted,
+  });
+  state.y -= 8;
+}
+
+function certificationHeight(
+  state: RenderState,
+  certification: { name: string; issuer: string; issuedAt: string; expiresAt?: string; verificationId?: string },
+): number {
+  const issuerHeight = getWrappedHeight(certification.issuer, CONTENT_WIDTH - 12, {
+    font: state.fontRegular,
+    size: 9.1,
+    lineHeight: 11.5,
+  });
+  const idHeight = certification.verificationId
+    ? getWrappedHeight(`ID: ${certification.verificationId}`, CONTENT_WIDTH - 12, {
+        font: state.fontRegular,
+        size: 8.2,
+        lineHeight: 10.4,
+      })
+    : 0;
+  return 14 + issuerHeight + idHeight + 8;
+}
+
+function drawCertifications(
+  state: RenderState,
+  certifications: Array<{
+    name: string;
+    issuer: string;
+    issuedAt: string;
+    expiresAt?: string;
+    verificationId?: string;
+  }>,
+  locale: Locale,
+) {
+  for (const certification of certifications) {
+    ensureSpace(state, certificationHeight(state, certification) + 6);
+    drawTextAt(state, certification.name, PAGE.marginX, state.y, {
+      font: state.fontBold,
+      size: 9.8,
+      color: COLORS.text,
+    });
+    drawRightAlignedText(
+      state,
+      formatCertificationPeriod(certification, locale),
+      PAGE.width - PAGE.marginX,
+      state.y,
+      {
+        size: 8.8,
+        color: COLORS.muted,
+      },
+    );
+    state.y -= 12;
+    state.y -= drawWrappedTextAt(
+      state,
+      certification.issuer,
+      PAGE.marginX,
+      state.y,
+      CONTENT_WIDTH - 12,
+      {
+        size: 9.1,
+        lineHeight: 11.5,
+        color: COLORS.muted,
+      },
+    );
+    if (certification.verificationId) {
+      state.y -= drawWrappedTextAt(
+        state,
+        `ID: ${certification.verificationId}`,
+        PAGE.marginX,
+        state.y,
+        CONTENT_WIDTH - 12,
+        {
+          size: 8.2,
+          lineHeight: 10.4,
+          color: COLORS.muted,
+        },
+      );
+    }
+    state.y -= 8;
+  }
 }
 
 function getTechnologyBlockHeight(
@@ -461,6 +597,14 @@ async function generatePdf(locale: Locale): Promise<void> {
 
   drawSectionHeading(state, labels.summary);
   drawSummary(state, data.summary);
+
+  drawSectionHeading(state, labels.education);
+  drawEducation(state, data.education);
+
+  if (data.certifications.length > 0) {
+    drawSectionHeading(state, labels.certifications);
+    drawCertifications(state, data.certifications, locale);
+  }
 
   drawSectionHeading(state, labels.technologies);
   drawTechnologies(state, data.technologiesByGroup);

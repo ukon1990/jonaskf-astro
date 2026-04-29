@@ -320,6 +320,20 @@ export const techCatalog = defineTechCatalog({
   },
 
   // Languages
+  csharp: {
+    label: "C#",
+    category: "language",
+    parent: "languages",
+    website: "https://dotnet.microsoft.com/languages/csharp",
+    description: "Microsoft's object-oriented programming language.",
+  },
+  dotnet: { // Yeah, I know... Not a language, but recruiters.
+    label: "C#/.NET",
+    category: "language",
+    parent: "languages",
+    website: "https://dotnet.microsoft.com/",
+    description: "Microsoft's platform for building web applications using C#.",
+  },
   java: {
     label: "Java",
     category: "language",

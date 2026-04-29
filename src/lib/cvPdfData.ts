@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { certifications } from '../data/certifications';
 import { getTechDisplayName, getTechMeta, isTechSlug, type TechCategory } from '../data/tech';
 import { locales, ui, type Locale } from './i18n';
 
@@ -61,6 +62,19 @@ export type CvPdfData = {
     linkedin: string;
   };
   summary: string;
+  education: {
+    degree: string;
+    specialization: string;
+    institution: string;
+    period: string;
+  };
+  certifications: Array<{
+    name: string;
+    issuer: string;
+    issuedAt: string;
+    expiresAt?: string;
+    verificationId?: string;
+  }>;
   technologiesByGroup: Array<{ label: string; technologies: string[] }>;
   projectsByEmployer: CvEmployerGroup[];
 };
@@ -303,6 +317,7 @@ export async function buildCvPdfData(locale: Locale): Promise<CvPdfData> {
     .sort((a, b) => b.newestStartDate.valueOf() - a.newestStartDate.valueOf());
 
   const summary = ui[locale].home.intro.slice(0, 2).join(' ');
+  const bachelor = ui[locale].about.bachelor;
 
   return {
     locale,
@@ -313,6 +328,19 @@ export async function buildCvPdfData(locale: Locale): Promise<CvPdfData> {
       linkedin: 'https://www.linkedin.com/in/jonas-munthe-fl%C3%B8nes-07b68595',
     },
     summary,
+    education: {
+      degree: bachelor.degree,
+      specialization: bachelor.specialization,
+      institution: bachelor.institution,
+      period: bachelor.period,
+    },
+    certifications: certifications.map((certification) => ({
+      name: certification.name,
+      issuer: certification.issuer,
+      issuedAt: certification.issuedAt,
+      expiresAt: certification.expiresAt,
+      verificationId: certification.verificationId,
+    })),
     technologiesByGroup: groupAndRankTechnologies(projects, technologyUsage, locale),
     projectsByEmployer,
   };
