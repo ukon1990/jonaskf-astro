@@ -24,7 +24,7 @@ export const ui = {
       blog: 'Blogg',
     },
     about: {
-      title: 'Om',
+      title: 'Kontakt',
       educationTitle: 'Utdanning',
       certificationsTitle: 'Sertifiseringer',
       bachelor: {
@@ -97,7 +97,7 @@ export const ui = {
       blog: 'Blog',
     },
     about: {
-      title: 'About',
+      title: 'Contact',
       educationTitle: 'Education',
       certificationsTitle: 'Certifications',
       bachelor: {

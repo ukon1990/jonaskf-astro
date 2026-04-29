@@ -11,12 +11,12 @@ export function getStaticPaths() {
 }
 
 const locale = getLocaleFromParams(Astro.params);
-const title = locale === 'no' ? 'Om' : 'Working with';
+const aboutLabels = ui[locale].about;
+const title = aboutLabels.title;
 const description =
   locale === 'no'
-    ? 'Hvordan jeg jobber med produktutvikling og team.'
-    : 'How I approach product engineering engagements and collaborate with teams.';
-const aboutLabels = ui[locale].about;
+    ? 'Kontaktinformasjon, utdanning og sertifiseringer.'
+    : 'Contact details, education, and certifications.';
 const monthFormatter = new Intl.DateTimeFormat(locale === 'no' ? 'nb-NO' : 'en', {
   year: 'numeric',
   month: 'short',
