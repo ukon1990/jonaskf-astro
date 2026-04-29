@@ -27,7 +27,7 @@ const showBlog = locale === 'en' && hasPublishedPosts;
 <header>
   <nav class="site-nav" data-nav-root data-open="false">
     <div class="nav-primary">
-      <h2><a href={localizePath('/', locale)}>{SITE_TITLE}</a></h2>
+      <h2><a href={localizePath('/', locale)}><img src="/favicon.svg" alt="" aria-hidden="true" class="site-logo" />{SITE_TITLE}</a></h2>
       <button
         type="button"
         class="btn-icon menu-toggle"
@@ -122,6 +122,20 @@ const showBlog = locale === 'en' && hasPublishedPosts;
     margin: 0;
     font-size: 1rem;
     letter-spacing: 0;
+  }
+
+  .site-logo {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 6px;
+    vertical-align: middle;
+    margin-right: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  h2 a {
+    display: inline-flex;
+    align-items: center;
   }
 
   h2 a,
