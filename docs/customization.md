@@ -326,7 +326,7 @@ Integrate with:
 
 ### Local Testing
 
-1. **Start the dev server**: `pnpm dev`
+1. **Start the dev server**: `pnpm start`
 2. **Test all pages**: Navigate through your site
 3. **Check responsiveness**: Test on different screen sizes
 4. **Validate HTML**: Use browser dev tools

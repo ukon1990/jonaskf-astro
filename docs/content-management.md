@@ -146,7 +146,7 @@ src/content/
 
 ### Development Mode
 
-1. **Start the dev server**: `pnpm dev`
+1. **Start the dev server**: `pnpm start`
 2. **Navigate to your content**: Visit the relevant pages to see your content
 3. **Make changes**: Edit your Markdown files and see changes in real-time
 

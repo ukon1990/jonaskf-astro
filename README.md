@@ -72,7 +72,7 @@ To run this personal website on your own computer:
 
 3. **Start the development server**
    ```bash
-   pnpm dev
+   pnpm start
    ```
    The site will be available at `http://localhost:4321`
 
@@ -81,11 +81,13 @@ To run this personal website on your own computer:
 | Command                   | Action                                           |
 | :------------------------ | :----------------------------------------------- |
 | `pnpm install`           | Installs dependencies                            |
-| `pnpm dev`               | Starts local dev server at `localhost:4321`     |
+| `pnpm start`             | Starts Astro's local dev server with hot reload |
 | `pnpm build`             | Build your production site to `./dist/`         |
-| `pnpm preview`           | Preview your build locally, before deploying    |
+| `pnpm preview`           | Serves the already built `dist/` output locally |
 | `pnpm astro ...`         | Run CLI commands like `astro add`, `astro check` |
 | `pnpm astro -- --help`   | Get help using the Astro CLI                    |
+
+`pnpm start` and Astro's more common `pnpm dev` convention serve the same purpose here: run the local development server. This project uses the script name `start` for that task. `pnpm preview` is different: it serves the production build after you run `pnpm build`, so it is useful for checking the built site rather than live editing.
 
 ## 📚 Documentation
 

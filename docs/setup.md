@@ -34,6 +34,8 @@ pnpm start
 
 The website will be available at `http://localhost:4321`
 
+In this project, `pnpm start` runs `astro dev`, which means it is the development server with hot reload. `pnpm preview` is only for serving the production build after `pnpm build`.
+
 ### 4. View the Website
 
 Open your browser and navigate to `http://localhost:4321` to see the website running locally.
@@ -44,7 +46,7 @@ Open your browser and navigate to `http://localhost:4321` to see the website run
 |---------|-------------|
 | `pnpm start` | Start development server with hot reload |
 | `pnpm build` | Build the site for production |
-| `pnpm preview` | Preview the production build locally |
+| `pnpm preview` | Preview the production build locally after `pnpm build` |
 | `pnpm astro check` | Check for TypeScript errors |
 
 ## Project Structure Overview
@@ -102,7 +104,7 @@ jonaskf/
 
 **Port already in use:**
 ```bash
-pnpm run start --port 3000
+pnpm start -- --port 3000
 ```
 
 **Dependencies not installing:**

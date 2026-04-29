@@ -15,7 +15,7 @@ If you just want to get the site running quickly:
 1. Install Node.js (v18+) and pnpm
 2. Clone the repository
 3. Run `pnpm install`
-4. Run `pnpm dev`
+4. Run `pnpm start`
 5. Open `http://localhost:4321`
 
 For detailed instructions, see the [Setup Guide](./setup.md).
