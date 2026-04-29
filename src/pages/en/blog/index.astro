@@ -6,7 +6,6 @@ import Footer from '../../../components/Footer.astro';
 import FormattedDate from '../../../components/FormattedDate.astro';
 import Header from '../../../components/Header.astro';
 import Tags from '../../../components/Tags.astro';
-import { SITE_TITLE } from '../../../consts';
 import { ui } from '../../../lib/i18n';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
@@ -24,7 +23,7 @@ const featured = posts[0];
 <html lang="en">
   <head>
     <BaseHead
-      title={`Writing — ${SITE_TITLE}`}
+      title="Writing"
       description={`${ui.en.siteDescription} Notes and case studies.`}
       locale="en"
       alternateLocales={['en']}
