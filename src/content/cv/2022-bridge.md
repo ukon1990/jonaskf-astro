@@ -7,17 +7,17 @@
   "link": "https://tradesolution.no/tjenester/bridge/",
   "startDate": "2022-01-01",
   "endDate": "2025-11-01",
-  "tech": ["azure-sql", "mongodb", "jest", "kotlin", "typescript", "docker", "kubernetes", "react", "spring-boot", "scss", "openapi", "datadog", "logrocket", "azure-pipelines", "react-hook-form", "tanstack-query", "tanstack-table", "junit", "mongock", "mockk", "testcontainers"],
+  "tech": ["azure-sql", "mongodb", "jest", "kotlin", "java", "typescript", "docker", "kubernetes", "react", "spring-boot", "scss", "openapi", "datadog", "logrocket", "azure-pipelines", "react-hook-form", "tanstack-query", "tanstack-table", "junit", "mongock", "mockk", "testcontainers"],
   "translations": {
     "no": {
       "title": "Bridge",
       "role": "Fullstack-utvikler",
-      "summary": "Arbeid på Tradesolutions Bridge-plattform for digital samhandling i dagligvare- og serveringsbransjen. Hovedfokuset var React-frontenden for Bridge Transport, med bidrag på Kotlin-backend, CI/CD, testing og observability."
+      "summary": "Utvikling av Tradesolution sin Bridge-plattform for digital samhandling i dagligvare- og serveringsbranjen. Bidro som fullstackutvikler med React-frontend, Kotlin-backend, CI/CD, testing og observability. Det siste året var hovedfokuset frontend og vedlikehold av TakeCargo-systemet samt     komponentbiblioteket Iceberg. Var med på å skalere prosjektet fra ett team med 3 utviklere til 16 utviklere og 1 designer."
     },
     "en": {
       "title": "Bridge",
       "role": "Full-stack Developer",
-      "summary": "Work on Tradesolution’s Bridge platform for digital collaboration in the Norwegian grocery and hospitality sectors. The main focus was the React front end for Bridge Transport, with contributions to Kotlin backend services, CI/CD, testing and observability."
+      "summary": "Development of Tradesolution’s Bridge platform for digital collaboration in the grocery and hospitality sectors. Worked as a full-stack developer across React frontend, Kotlin backend, CI/CD, testing and observability. During the last year, the primary focus was frontend development and maintenance of the TakeCargo system and the Iceberg component library. Helped scale the project from a team of 3 developers to 16 developers and 1 designer."
     }
   }
 }
@@ -32,7 +32,7 @@ Bridge Flow standardiserer EDI-utveksling og reduserer manuelt administrativt ar
 
 ## Rolle og bidrag
 
-- Bygget Bridge Transport og felles plattformfunksjonalitet fra grunnen av.
+- Vært med å bygge Bridge Transport og felles plattformfunksjonalitet fra grunnen av.
 - Utformet og implementerte komponentarkitektur, visuelt system og sentrale transportflyter i React, TypeScript, SCSS, React Hook Form, TanStack Query og TanStack Table.
 - Bidro til Kotlin/Spring Boot-tjenester for turer, rutehåndtering, transport, booking og analyse.
 - Arbeidet med automatiserte bygg, tester og container-deployments til Azure Kubernetes Service via Azure Pipelines.
