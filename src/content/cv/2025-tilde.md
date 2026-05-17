@@ -6,7 +6,7 @@
   "customerUrl": "https://www.miljodirektoratet.no/",
   "link": "https://tildeinn.miljodirektoratet.no/",
   "startDate": "2025-12-01",
-  "tech": ["angular", "typescript", "scss", "rest-api", "azure", "git", "scrum", "github-actions"],
+  "tech": ["angular", "typescript", "scss", "dotnet", "rest-api", "azure", "git", "scrum", "github-actions"],
   "translations": {
     "no": {
       "title": "Tilde",
