@@ -1,7 +1,7 @@
 ---
 {
   "slug": "2019-takecargo",
-  "employer": "Crayon Consulting AS",
+  "employer": "SoftwareOne",
   "customer": "Tradesolution",
   "customerUrl": "https://www.tradesolution.no/",
   "link": "https://tradesolution.no/tjenester/takecargo/",

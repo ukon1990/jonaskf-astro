@@ -1,7 +1,7 @@
 ---
 {
   "slug": "2016-norwegian-fish-auction",
-  "employer": "Crayon Consulting AS",
+  "employer": "SoftwareOne",
   "customer": "Norwegian Fish Auction",
   "customerUrl": "https://nfa.no",
   "link": "https://nfa.no",

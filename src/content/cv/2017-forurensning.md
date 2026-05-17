@@ -1,7 +1,7 @@
 ---
 {
   "slug": "2017-forurensning",
-  "employer": "Crayon Consulting AS",
+  "employer": "SoftwareOne",
   "customer": "Miljødirektoratet",
   "projectName": "Forurensning – prototype ny webklient",
   "startDate": "2017-08-01",

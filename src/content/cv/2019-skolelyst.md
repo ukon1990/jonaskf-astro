@@ -1,7 +1,7 @@
 ---
 {
   "slug": "2019-skolelyst",
-  "employer": "Crayon Consulting AS",
+  "employer": "SoftwareOne",
   "customer": "Tine",
   "customerUrl": "https://tine.no",
   "link": "https://www.skolelyst.no",

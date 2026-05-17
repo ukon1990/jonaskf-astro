@@ -1,7 +1,7 @@
 ---
 {
   "slug": "2016-farveringen-scanner",
-  "employer": "Crayon Consulting AS",
+  "employer": "SoftwareOne",
   "customer": "Farveringen",
   "startDate": "2016-11-01",
   "endDate": "2017-05-01",

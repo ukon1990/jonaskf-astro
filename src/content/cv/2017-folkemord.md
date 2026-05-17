@@ -1,7 +1,7 @@
 ---
 {
   "slug": "2017-folkemord",
-  "employer": "Crayon Consulting AS",
+  "employer": "SoftwareOne",
   "customer": "Holocaustsenteret",
   "projectName": "Folkemord og Holocaust i Norge",
   "startDate": "2017-05-01",
