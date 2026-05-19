@@ -54,7 +54,7 @@ The site uses Astro's Content Collections to manage blog posts and CV entries wi
 To run this personal website on your own computer:
 
 ### Prerequisites
-- Node.js (version 18 or higher)
+- Node.js (version 26)
 - pnpm package manager
 
 ### Setup Steps

@@ -12,7 +12,7 @@ Welcome to the documentation for this personal website! This folder contains gui
 
 If you just want to get the site running quickly:
 
-1. Install Node.js (v18+) and pnpm
+1. Install Node.js (v22+) and pnpm
 2. Clone the repository
 3. Run `pnpm install`
 4. Run `pnpm start`

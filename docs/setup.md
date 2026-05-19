@@ -6,7 +6,7 @@ This guide will help you get this personal website running on your own computer.
 
 Before you begin, make sure you have the following installed:
 
-- **Node.js** (version 18 or higher) - [Download here](https://nodejs.org/)
+- **Node.js** (version 22+) - [Download here](https://nodejs.org/)
 - **pnpm** package manager - Install with: `npm install -g pnpm`
 
 ## Step-by-Step Setup
